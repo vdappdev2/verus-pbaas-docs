@@ -21,6 +21,7 @@ docs/
 
 ## Current coverage
 
+- **Identity** — 13 RPC reference pages, 4 concept pages, 3 how-to guides
 - **Marketplace** — 5 RPC reference pages, 1 concept page, 1 how-to guide
 
 ## Methodology
