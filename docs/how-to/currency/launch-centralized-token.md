@@ -96,7 +96,7 @@ Can mint to any address:
 sendcurrency "mybrand@" '[{"address":"alice@","amount":500,"currency":"mybrand","mintnew":true}]'
 ```
 
-`fromaddress` must be the currency's own identity. Minting takes 2–10 blocks to process.
+`fromaddress` must be the currency's own identity. Minting takes a few blocks to process.
 
 ### Burn tokens
 

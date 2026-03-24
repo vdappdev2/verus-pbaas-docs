@@ -105,8 +105,9 @@ For centralized currencies, minting continues indefinitely unless `endblock` is 
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `startblock` | number | Block height at which the currency launches. Preconversion window runs from broadcast to startblock. Minimum window: 20 blocks. |
-| `endblock` | number | For centralized currencies: block at which centralized control ends **permanently** — no more minting. Minimum 480 blocks after `startblock`. For decentralized currencies: no effect. |
+| `expiryheight` | number | Block height at which the definition transaction itself expires. Default: current height + 20. If the `definecurrency` transaction is not mined by this height, it becomes invalid. Distinct from `startblock`. |
+| `startblock` | number | Block height at which the currency launches. Preconversion window runs from broadcast to startblock. Minimum window: 20 blocks. If omitted, defaults to `expiryheight`. |
+| `endblock` | number | For centralized currencies: block at which centralized control ends **permanently** — no more minting. Minimum 480 blocks after `startblock`. For decentralized currencies: no operational effect (can be set as a signal to software, but this is not yet confirmed). |
 
 ### Sub-ID economy
 

@@ -42,7 +42,7 @@ When multiple conversions arrive in the same block:
 3. It derives a single price that reflects all conversions together
 4. Every participant receives tokens at that price
 
-Conversions are processed in the block after the transaction is mined, and the converted output typically settles within 2–10 blocks depending on network activity. This slight delay is part of the batching mechanism that makes fair pricing possible.
+The converted output typically settles within 2–10 blocks depending on network activity. This slight delay is part of the batching mechanism that makes fair pricing possible.
 
 This is fundamentally different from the sequential execution model used by Ethereum AMMs (Uniswap, Curve, etc.), where each swap changes the price for the next swap within the same block.
 

@@ -18,7 +18,7 @@ Returns an async operation ID. Poll with `z_getoperationstatus` to get the resul
 ## Syntax
 
 ```
-sendcurrency "fromaddress" '[{"address":...,"amount":...},...]' (minconfs) (feeamount) (returntxtemplate)
+sendcurrency "fromaddress" '[{"address":... ,"amount":...},...]' (minconfs) (feeamount) (returntxtemplate)
 ```
 
 ---
@@ -260,7 +260,7 @@ The `data` object follows the [`signdata`](../identity/signdata.md) format. Tran
 
 - All conversions in the same block execute at the same price — no ordering advantage, no front-running. See [MEV-Resistant DeFi](../../concepts/mev-resistant-defi.md).
 - Conversion fees: **0.025%** for direct conversions (reserve-to-basket or vice versa), **0.05%** for via conversions (two hops). Fees are deducted from the input amount by default. Set `addconversionfees: true` to add fees on top.
-- Conversions are processed in the block after the transaction is mined.
+- Converted output typically settles within 2–10 blocks depending on network activity.
 
 ### Multi-currency UTXO change
 
@@ -274,7 +274,7 @@ The `outputs` array can contain multiple entries batched into one transaction: m
 
 ### ID control tokens
 
-Identities with `flags: 5` have a control token — a currency with the same name and a supply of exactly 0.00000001 (1 satoshi). Sending it via `sendcurrency` transfers revoke/recover authority. If an identity is exported before a control token is created, the exported copy cannot be controlled by the token.
+Identities with `flags: 5` (combined bitfield: activated + control token) have a control token — a currency with the same name and a supply of exactly 0.00000001 (1 satoshi). Sending it via `sendcurrency` transfers revoke/recover authority. If an identity is exported before a control token is created, the exported copy cannot be controlled by the token.
 
 ### feecurrency restrictions
 
