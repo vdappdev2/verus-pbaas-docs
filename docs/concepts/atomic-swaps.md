@@ -96,7 +96,7 @@ This flow skips the 1-confirmation waiting period since no on-chain offer exists
 
 ## Same-chain only
 
-The marketplace operates on a single chain. To trade assets across chains, export the asset to the target chain first (using `sendcurrency` with `exportcurrency` or `exportid`), then trade on that chain's marketplace.
+The marketplace operates on a single chain. To trade assets across chains, export the asset to the target chain first (using [`sendcurrency`](../reference/multichain/sendcurrency.md) with `exportcurrency` or `exportid`), then trade on that chain's marketplace.
 
 ---
 

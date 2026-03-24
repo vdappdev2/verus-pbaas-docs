@@ -84,7 +84,7 @@ Each VerusID can define at most one currency, and only once — even if the curr
 
 ## Cross-chain identity
 
-A VerusID can be exported to other chains via `sendcurrency` with `exportid: true`. The exported ID becomes an **independent copy** — it has its own update history, authorities, and content from that point forward. Changes on one chain do not affect the other.
+A VerusID can be exported to other chains via [`sendcurrency`](../reference/multichain/sendcurrency.md) with `exportid: true`. The exported ID becomes an **independent copy** — it has its own update history, authorities, and content from that point forward. Changes on one chain do not affect the other.
 
 ---
 
