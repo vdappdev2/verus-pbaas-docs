@@ -77,7 +77,7 @@ If `external-guardian@` revokes the identity:
 
 ### Real-world example
 
-`vault.bitcoins@` on Verus mainnet is permanently bricked in exactly this way. Its history (74 revisions) shows an authority battle: the owner repeatedly recovered with self/self authorities, but an external revocation authority's transaction landed in the same block as a recovery, revoking the identity after it was set back to self/self. The result is a state that no single transaction could create — revoked with self as both authorities.
+`vault.bitcoins@` on Verus mainnet is permanently bricked. Its history (74 revisions) shows an authority battle: the owner repeatedly recovered to self/self authorities, and an external party repeatedly set authorities back to external and revoked. The final bricking was not a `revokeidentity` call — it was a single `updateidentity` that simultaneously set the revoked flag and changed both authorities back to self. This required signatures from both the external revocation and recovery authorities. A validation edge case allowed it: the daemon checked the *old* identity's `recoveryauthority` (external, not self) before permitting the revoke flag, but did not check the *new* identity's `recoveryauthority` (self). The result: revoked with self as both authorities — permanently unrecoverable.
 
 ### Self-revocation is impossible
 

@@ -75,6 +75,7 @@ Most fields are preserved when omitted — they carry over from the current on-c
 
 ## Important behaviors
 
+- **Do not set `flags` to the revoked value (32768) directly.** Use [`revokeidentity`](revokeidentity.md) to revoke an identity. Setting the revoked flag via `updateidentity` bypasses the intended revocation workflow.
 - **Cannot modify `timelock` via update.** Including `timelock: 0` on a locked identity is rejected. Use [`setidentitytimelock`](setidentitytimelock.md) or revoke+recover.
 - **`contentmultimap` is an append-only ledger.** Previous content remains on-chain and accessible via [`getidentitycontent`](getidentitycontent.md) even after an update clears the current multimap.
 - **Invalid contentmultimap formats** are silently ignored — the transaction confirms but content is not stored. The `{message: "text"}` format (used by `signdata`) is not valid for contentmultimap entries.
