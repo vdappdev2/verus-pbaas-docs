@@ -62,7 +62,7 @@ There is no upper bound on `expiryheight`. The trade-off: a longer expiry means 
 
 ## ID control tokens and the marketplace {#id-control-tokens}
 
-Some VerusIDs have an associated **control token** — a currency with the same name as the identity and a total supply of exactly 1 satoshi (0.00000001). The control token grants revoke and recover authority over the identity. Check for a control token by looking at `flags: 5` in [`getidentity`](../reference/marketplace/../../identity/getidentity.md) output, or by querying [`getcurrency`](../reference/marketplace/../../identity/getcurrency.md) with the identity name.
+Some VerusIDs have an associated **control token** — a currency with the same name as the identity and a total supply of exactly 1 satoshi (0.00000001). The control token grants revoke and recover authority over the identity. Check for a control token by looking at `flags: 5` in [`getidentity`](../reference/identity/getidentity.md) output, or by querying `getcurrency` with the identity name.
 
 When an identity has a control token, the marketplace enforces a rule: **the identity cannot be offered or requested directly**. Instead, trade the control token as a currency:
 
@@ -96,7 +96,7 @@ This flow skips the 1-confirmation waiting period since no on-chain offer exists
 
 ## Same-chain only
 
-The marketplace operates on a single chain. To trade assets across chains, export the asset to the target chain first (using [`sendcurrency`](../reference/marketplace/../sendcurrency.md) with `exportcurrency` or `exportid`), then trade on that chain's marketplace.
+The marketplace operates on a single chain. To trade assets across chains, export the asset to the target chain first (using `sendcurrency` with `exportcurrency` or `exportid`), then trade on that chain's marketplace.
 
 ---
 

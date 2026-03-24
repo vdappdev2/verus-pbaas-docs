@@ -54,6 +54,8 @@ The input is a single JSON object with the following fields:
 
 ### MMR fields
 
+> These fields are documented from the daemon interface but have not yet been verified on testnet.
+
 | Field | Type | Description |
 |-------|------|-------------|
 | `createmmr` | boolean | Build a Merkle Mountain Range over the data objects |

@@ -18,7 +18,7 @@ Supports filtering by VDXF key to retrieve only specific application data.
 ## Syntax
 
 ```
-getidentitycontent "identity" (heightstart) (heightend) (txproofs) (vdxfkey) (keepdeleted)
+getidentitycontent "identity" (heightstart) (heightend) (txproofs) (txproofheight) (vdxfkey) (keepdeleted)
 ```
 
 ---
@@ -31,8 +31,9 @@ getidentitycontent "identity" (heightstart) (heightend) (txproofs) (vdxfkey) (ke
 | 2 | `heightstart` | number | No | 0 | Start of block height range |
 | 3 | `heightend` | number | No | max | End of block height range. `-1` for mempool. |
 | 4 | `txproofs` | boolean | No | `false` | Include transaction proofs |
-| 5 | `vdxfkey` | string | No | — | Filter to a specific VDXF key (i-address). Only entries under this outer key are returned. |
-| 6 | `keepdeleted` | boolean | No | `false` | Include items marked as deleted |
+| 5 | `txproofheight` | number | No | — | Height for proof generation |
+| 6 | `vdxfkey` | string | No | — | Filter to a specific VDXF key (i-address). Only entries under this outer key are returned. |
+| 7 | `keepdeleted` | boolean | No | `false` | Include items marked as deleted |
 
 ---
 

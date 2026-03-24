@@ -16,10 +16,10 @@ Create a fully decentralized offer to trade currency for currency, currency for 
 ## Syntax
 
 ```
-makeoffer "fromaddress" '{"currency":"name","amount":n}' '{"currency":"name","amount":n,"address":"dest"}' "changeaddress" (expiryheight) (returntx) (feeamount)
+makeoffer "fromaddress" '{"changeaddress":"addr","expiryheight":n,"offer":{...},"for":{...}}' (returntx) (feeamount)
 ```
 
-The second positional argument is the `offer` (what you give), the third is the `for` (what you want in return).
+The second argument is a single JSON object containing the offer details, for details, change address, and expiry height.
 
 ---
 
@@ -28,12 +28,18 @@ The second positional argument is the `offer` (what you give), the third is the 
 | # | Name | Type | Required | Default | Description |
 |---|------|------|----------|---------|-------------|
 | 1 | `fromaddress` | string | Yes | — | Funding source for fees. R-address, VerusID (`name@`), i-address, or wildcard (`"*"`, `"R*"`, `"i*"`). Does not need to control the offered asset — purely the fee source. |
-| 2 | `offer` | object | Yes | — | What to offer. See [Offer object](#offer-object) below. |
-| 3 | `for` | object | Yes | — | What to accept in return. See [For object](#for-object) below. |
-| 4 | `changeaddress` | string | Yes | — | **Required.** Destination for change. R-address, VerusID (`name@`), or i-address. |
-| 5 | `expiryheight` | number | No | current + 20 | Absolute block height at which this offer expires. Default ~20 minutes — almost certainly too short for marketplace listings. Set higher for real listings (e.g., +1440 for ~1 day, +10080 for ~1 week). No upper bound. |
-| 6 | `returntx` | boolean | No | `false` | Return signed transaction hex instead of broadcasting. Nothing is locked on-chain until the hex is broadcast. Enables [off-chain offer passing](../../how-to/marketplace/list-identity-for-sale.md#off-chain-offers). |
-| 7 | `feeamount` | number | No | `0.0001` | Fee in native coin. No `feecurrency` option — always native. |
+| 2 | (JSON object) | object | Yes | — | Single object containing all offer parameters (see fields below). |
+| 3 | `returntx` | boolean | No | `false` | Return signed transaction hex instead of broadcasting. Nothing is locked on-chain until the hex is broadcast. Enables [off-chain offer passing](../../how-to/marketplace/list-identity-for-sale.md#off-chain-offers). |
+| 4 | `feeamount` | number | No | `0.0001` | Fee in native coin. No `feecurrency` option — always native. |
+
+### JSON object fields
+
+| Field | Type | Required | Default | Description |
+|-------|------|----------|---------|-------------|
+| `offer` | object | Yes | — | What to offer. See [Offer object](#offer-object) below. |
+| `for` | object | Yes | — | What to accept in return. See [For object](#for-object) below. |
+| `changeaddress` | string | Yes | — | Destination for change. R-address, VerusID (`name@`), or i-address. |
+| `expiryheight` | number | No | current + 20 | Absolute block height at which this offer expires. Default ~20 minutes — almost certainly too short for marketplace listings. Set higher for real listings (e.g., +1440 for ~1 day, +10080 for ~1 week). No upper bound. |
 
 ### Offer object
 
@@ -130,7 +136,7 @@ What you want in return. Structure depends on what you are requesting.
 Offer 1 YEN for 1 USD, receiving at `myid@`:
 
 ```
-makeoffer "myid@" '{"currency":"yen","amount":1}' '{"currency":"usd","amount":1,"address":"myid@"}' "myid@" 990000
+makeoffer "myid@" '{"changeaddress":"myid@","expiryheight":990000,"offer":{"currency":"yen","amount":1},"for":{"currency":"usd","amount":1,"address":"myid@"}}'
 ```
 
 ### Offer an identity for sale
@@ -138,7 +144,7 @@ makeoffer "myid@" '{"currency":"yen","amount":1}' '{"currency":"usd","amount":1,
 List `myname@` for 100 VRSC:
 
 ```
-makeoffer "myid@" '{"identity":"myname@"}' '{"currency":"vrsc","amount":100,"address":"myid@"}' "myid@" 995000
+makeoffer "myid@" '{"changeaddress":"myid@","expiryheight":995000,"offer":{"identity":"myname@"},"for":{"currency":"vrsc","amount":100,"address":"myid@"}}'
 ```
 
 ### Offer an ID control token
@@ -146,7 +152,7 @@ makeoffer "myid@" '{"identity":"myname@"}' '{"currency":"vrsc","amount":100,"add
 Sell control of `premium.brand@` (which has a control token) for 500 VRSC:
 
 ```
-makeoffer "myid@" '{"currency":"premium.brand","amount":0.00000001}' '{"currency":"vrsc","amount":500,"address":"myid@"}' "myid@" 995000
+makeoffer "myid@" '{"changeaddress":"myid@","expiryheight":995000,"offer":{"currency":"premium.brand","amount":0.00000001},"for":{"currency":"vrsc","amount":500,"address":"myid@"}}'
 ```
 
 ---

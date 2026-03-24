@@ -48,6 +48,7 @@ getvdxfid "vdxfuri" ("vdxfkey") ("uint256") (indexnum)
 | Field | Type | Description |
 |-------|------|-------------|
 | `vdxfid` | string | The i-address for this VDXF key — use this in `contentmultimap` and filters |
+| `indexid` | string | Index-form address |
 | `hash160result` | string | Raw hash |
 | `qualifiedname` | object | Namespace and name components |
 

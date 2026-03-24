@@ -16,8 +16,10 @@ Accept an offer found via [`getoffers`](getoffers.md). Both sides of the trade e
 ## Syntax
 
 ```
-takeoffer "fromaddress" "txid|tx" "changeaddress" '{"deliver":...}' '{"accept":...}' (returntx) (feeamount)
+takeoffer "fromaddress" '{"txid":"txid" | "tx":"hextx","changeaddress":"addr","deliver":{...},"accept":{...}}' (returntx) (feeamount)
 ```
+
+The second argument is a single JSON object containing the offer reference, change address, deliver, and accept details.
 
 ---
 
@@ -26,13 +28,19 @@ takeoffer "fromaddress" "txid|tx" "changeaddress" '{"deliver":...}' '{"accept":.
 | # | Name | Type | Required | Default | Description |
 |---|------|------|----------|---------|-------------|
 | 1 | `fromaddress` | string | Yes | — | Funding source for fees. R-address, VerusID (`name@`), i-address, or wildcard (`"*"`, `"R*"`, `"i*"`). Does not need to hold the delivered asset — purely fee source. |
-| 2 | `txid` | string | Yes* | — | Transaction ID of the offer to accept (from [`getoffers`](getoffers.md)). Must have **at least 1 confirmation**. *Either `txid` or `tx` is required, not both. |
-| 2 | `tx` | string | Yes* | — | Raw hex transaction (from [`makeoffer`](makeoffer.md) with `returntx: true`). For off-chain offer passing — no confirmation wait needed. *Either `txid` or `tx` is required, not both. |
-| 3 | `changeaddress` | string | **Yes** | — | **Required** — daemon rejects without it. R-address, VerusID (`name@`), or i-address. |
-| 4 | `deliver` | object/string | Yes | — | What the taker delivers. Must **exactly match** what the maker's `accept` specified. See [Deliver object](#deliver-object). |
-| 5 | `accept` | object | Yes | — | What the taker receives. Must **exactly match** what the maker offered. See [Accept object](#accept-object). |
-| 6 | `returntx` | boolean | No | `false` | Return signed transaction hex instead of broadcasting. For multi-sig or distributed authority workflows. |
-| 7 | `feeamount` | number | No | `0.0001` | Fee in native coin. No `feecurrency` option — always native. |
+| 2 | (JSON object) | object | Yes | — | Single object containing all takeoffer parameters (see fields below). |
+| 3 | `returntx` | boolean | No | `false` | Return signed transaction hex instead of broadcasting. For multi-sig or distributed authority workflows. |
+| 4 | `feeamount` | number | No | `0.0001` | Fee in native coin. No `feecurrency` option — always native. |
+
+### JSON object fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `txid` | string | Yes* | Transaction ID of the offer to accept (from [`getoffers`](getoffers.md)). Must have **at least 1 confirmation**. *Either `txid` or `tx` is required, not both. |
+| `tx` | string | Yes* | Raw hex transaction (from [`makeoffer`](makeoffer.md) with `returntx: true`). For off-chain offer passing — no confirmation wait needed. *Either `txid` or `tx` is required, not both. |
+| `changeaddress` | string | **Yes** | **Required** — daemon rejects without it. R-address, VerusID (`name@`), or i-address. |
+| `deliver` | object/string | Yes | What the taker delivers. Must **exactly match** what the maker's `accept` specified. See [Deliver object](#deliver-object). |
+| `accept` | object | Yes | What the taker receives. Must **exactly match** what the maker offered. See [Accept object](#accept-object). |
 
 ### Deliver object
 
@@ -113,7 +121,7 @@ Minimum required fields for identity accept: `name`, `primaryaddresses`, `minimu
 Accept an offer of 1 YEN for 1 USD:
 
 ```
-takeoffer "myid@" "ca9756f7962648e0d0edde60cb0266d8f16257421bd49a5fee24672d79101ac2" "myid@" '{"currency":"usd","amount":1}' '{"address":"myid@","currency":"yen","amount":1}'
+takeoffer "myid@" '{"txid":"ca9756f7962648e0d0edde60cb0266d8f16257421bd49a5fee24672d79101ac2","changeaddress":"myid@","deliver":{"currency":"usd","amount":1},"accept":{"address":"myid@","currency":"yen","amount":1}}'
 ```
 
 ### Buy an identity
@@ -121,7 +129,7 @@ takeoffer "myid@" "ca9756f7962648e0d0edde60cb0266d8f16257421bd49a5fee24672d79101
 Accept an offer of `coolname@` for 100 VRSC:
 
 ```
-takeoffer "myid@" "e8816674263af0ef27ef4c0c20ac3a9a7e6e68992b69a019e6524eb3b65b9379" "myid@" '{"currency":"vrsc","amount":100}' '{"name":"coolname","parent":"iJhCezBExJHvtyH3fGhNnt2NhU4Ztkf2yq","primaryaddresses":["RMyNewAddress..."],"minimumsignatures":1,"revocationauthority":"mybackup@","recoveryauthority":"mybackup@"}'
+takeoffer "myid@" '{"txid":"e8816674263af0ef27ef4c0c20ac3a9a7e6e68992b69a019e6524eb3b65b9379","changeaddress":"myid@","deliver":{"currency":"vrsc","amount":100},"accept":{"name":"coolname","parent":"iJhCezBExJHvtyH3fGhNnt2NhU4Ztkf2yq","primaryaddresses":["RMyNewAddress..."],"minimumsignatures":1,"revocationauthority":"mybackup@","recoveryauthority":"mybackup@"}}'
 ```
 
 ---

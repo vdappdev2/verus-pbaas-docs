@@ -18,7 +18,7 @@ For cumulative content, use [`getidentitycontent`](getidentitycontent.md) instea
 ## Syntax
 
 ```
-getidentityhistory "identity" (heightstart) (heightend) (txproofs)
+getidentityhistory "identity" (heightstart) (heightend) (txproofs) (txproofheight)
 ```
 
 ---
@@ -31,6 +31,7 @@ getidentityhistory "identity" (heightstart) (heightend) (txproofs)
 | 2 | `heightstart` | number | No | 0 | Start of block height range |
 | 3 | `heightend` | number | No | max | End of block height range |
 | 4 | `txproofs` | boolean | No | `false` | Include transaction proofs |
+| 5 | `txproofheight` | number | No | — | Height for proof generation |
 
 ---
 

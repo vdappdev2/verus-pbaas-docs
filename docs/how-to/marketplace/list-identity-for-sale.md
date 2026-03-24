@@ -67,19 +67,19 @@ If the current height is 989,000 and you want a 1-week listing: `989000 + 10080 
 ### Identity without a control token
 
 ```
-makeoffer "fundingid@" '{"identity":"myname@"}' '{"currency":"vrsc","amount":100,"address":"receivingid@"}' "fundingid@" 999080
+makeoffer "fundingid@" '{"changeaddress":"fundingid@","expiryheight":999080,"offer":{"identity":"myname@"},"for":{"currency":"vrsc","amount":100,"address":"receivingid@"}}'
 ```
 
-- `"fundingid@"` — pays the fee (~0.0001 native coin); does not need to be the identity being sold
-- `{"identity":"myname@"}` — the identity you are selling
-- `{"currency":"vrsc","amount":100,"address":"receivingid@"}` — the price (100 VRSC) and where you receive payment
-- `"fundingid@"` — change address
-- `999080` — expiry block height
+- `"fundingid@"` (first arg) — pays the fee (~0.0001 native coin); does not need to be the identity being sold
+- `offer.identity` — the identity you are selling
+- `for.currency`, `for.amount`, `for.address` — the price (100 VRSC) and where you receive payment
+- `changeaddress` — where change goes
+- `expiryheight` — expiry block height
 
 ### Identity with a control token (`flags: 5`)
 
 ```
-makeoffer "fundingid@" '{"currency":"myname.parentchain","amount":0.00000001}' '{"currency":"vrsc","amount":100,"address":"receivingid@"}' "fundingid@" 999080
+makeoffer "fundingid@" '{"changeaddress":"fundingid@","expiryheight":999080,"offer":{"currency":"myname.parentchain","amount":0.00000001},"for":{"currency":"vrsc","amount":100,"address":"receivingid@"}}'
 ```
 
 The only difference: the offer is `{"currency":"myname.parentchain","amount":0.00000001}` — the control token treated as a currency — instead of `{"identity":"myname@"}`.
@@ -161,7 +161,7 @@ For private sales where you already have a buyer, skip the on-chain listing:
 
 1. Create the offer without broadcasting:
    ```
-   makeoffer "fundingid@" '{"identity":"myname@"}' '{"currency":"vrsc","amount":100,"address":"receivingid@"}' "fundingid@" 999080 true
+   makeoffer "fundingid@" '{"changeaddress":"fundingid@","expiryheight":999080,"offer":{"identity":"myname@"},"for":{"currency":"vrsc","amount":100,"address":"receivingid@"}}' true
    ```
    The `true` at the end is `returntx` — returns hex instead of broadcasting.
 
@@ -169,7 +169,7 @@ For private sales where you already have a buyer, skip the on-chain listing:
 
 3. The buyer completes the swap:
    ```
-   takeoffer "buyerid@" "hexstring..." "buyerid@" '{"currency":"vrsc","amount":100}' '{"name":"myname","parent":"parentchain","primaryaddresses":["Rbuyer..."],"minimumsignatures":1}'
+   takeoffer "buyerid@" '{"tx":"hexstring...","changeaddress":"buyerid@","deliver":{"currency":"vrsc","amount":100},"accept":{"name":"myname","parent":"parentchain","primaryaddresses":["Rbuyer..."],"minimumsignatures":1}}'
    ```
 
 The identity is never locked on-chain until the buyer broadcasts the completed swap.

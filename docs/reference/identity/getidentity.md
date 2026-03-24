@@ -68,7 +68,7 @@ getidentity "identity" (height) (txproof) (txproofheight)
 | `status` | string | `"active"` or `"revoked"` |
 | `canspendfor` | boolean | Whether the current wallet can authorize spending for this identity |
 | `cansignfor` | boolean | Whether the current wallet can sign for this identity |
-| `identity.flags` | number | `0` = normal, `2` = delay lock active, `5` = has control token, `32768` = revoked |
+| `identity.flags` | number | Bitfield. `0` = normal, `1` = activated (has associated currency), `2` = delay lock active, `5` = has control token (combined bitfield: activated + control token), `32768` = revoked |
 | `identity.contentmultimap` | object | Only shows the **most recent update's** content. Use [`getidentitycontent`](getidentitycontent.md) for cumulative history. |
 | `identity.timelock` | number | `0` = unlocked. When `flags: 2`: delay in blocks. When `flags: 0` and `timelock > 0`: absolute block height lock. |
 

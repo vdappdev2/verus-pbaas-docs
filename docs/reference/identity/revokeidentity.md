@@ -42,7 +42,7 @@ revokeidentity "identity" (returntx) (tokenrevoke) (feeoffer) (sourceoffunds)
 
 ## Important behaviors
 
-- **Only changes the flag.** `revokeidentity` sets the revoked flag (`flags: 32768`) and preserves all other fields — authorities, primary addresses, content, and timelock are unchanged. Internally it calls `updateidentity` with only the flag modification.
+- **Only changes the flag.** `revokeidentity` sets the revoked flag (`flags: 32768`) and preserves all other fields — authorities, primary addresses, content, and timelock are unchanged. Effectively equivalent to an `updateidentity` with only the flag modification.
 - **Not idempotent.** Cannot revoke an already-revoked identity.
 - **Self-revocation is impossible.** An identity whose `revocationauthority` is itself cannot be revoked — returns "mandatory-script-verify-flag-failed". This applies to both root IDs and sub-IDs.
 - **Revocation authority only needs to be in wallet for signing.** `sourceoffunds` can be any other address — the authority signs but does not need to pay fees.
