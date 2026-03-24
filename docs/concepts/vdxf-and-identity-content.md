@@ -18,7 +18,7 @@ namespace::group.subgroup.name
 - **`vtimestamp.vrsc::proof.basic`** — application-defined key under the vtimestamp namespace
 - **`mcp3.vrsctest::test.vdxfformat`** — custom key under the mcp3 currency namespace
 
-Any currency namespace can define keys. This means applications and communities can create their own structured data schemas without coordination.
+Any ID namespace can define keys. This means applications and communities can create their own structured data schemas without coordination.
 
 ### System-defined keys
 

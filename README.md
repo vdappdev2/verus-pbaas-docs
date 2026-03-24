@@ -32,4 +32,4 @@ All documentation is built bottom-up:
 1. Test each RPC command live on vrsctest
 2. Document parameters, behavior, edge cases with real output
 3. Extract into presentable pages separated by Diátaxis quadrant
-4. Every claim is backed by verified daemon behavior
+4. Claims are backed by verified daemon behavior
