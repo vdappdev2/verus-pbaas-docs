@@ -40,7 +40,7 @@ Confirm `revocationauthority` and `recoveryauthority` show the guardian identiti
 
 ## Step 2: Add a timelock
 
-A timelock adds a time-delay before spending is possible, giving you a window to detect and stop unauthorized activity.
+A timelock adds a time-delay before spending is possible, giving you a window to detect and stop unauthorized activity. For best practices, have a revoke and recover authority set on an ID you timelock.
 
 ### Set a delay lock
 
