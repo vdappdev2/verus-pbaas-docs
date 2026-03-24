@@ -23,7 +23,7 @@ docs/
 
 - **Identity** — 13 RPC reference pages, 4 concept pages, 3 how-to guides
 - **Marketplace** — 5 RPC reference pages, 1 concept page, 1 how-to guide
-- **Multichain** — 1 RPC reference page (sendcurrency)
+- **Multichain** — 2 RPC reference pages, 3 concept pages, 1 how-to guide
 
 ## Methodology
 

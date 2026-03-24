@@ -163,7 +163,7 @@ sendcurrency "alice@" '[{"currency":"vrsctest","amount":0.1,"convertto":"kaiju",
 sendcurrency "alice@" '[{"currency":"vrsctest","amount":2,"convertto":"usd","via":"kaiju","address":"alice@"}]'
 ```
 
-All conversions in the same block execute at the same price — no front-running is possible. Use `estimateconversion` to preview expected output before committing.
+All conversions in the same block execute at the same price — no front-running is possible. See [MEV-Resistant DeFi](../../concepts/mev-resistant-defi.md). Use `estimateconversion` to preview expected output before committing.
 
 ### 3. Cross-chain transfer
 
@@ -258,7 +258,7 @@ The `data` object follows the [`signdata`](../identity/signdata.md) format. Tran
 
 ### Conversion mechanics
 
-- All conversions in the same block execute at the same price — no ordering advantage, no front-running.
+- All conversions in the same block execute at the same price — no ordering advantage, no front-running. See [MEV-Resistant DeFi](../../concepts/mev-resistant-defi.md).
 - Conversion fees: **0.025%** for direct conversions (reserve-to-basket or vice versa), **0.05%** for via conversions (two hops). Fees are deducted from the input amount by default. Set `addconversionfees: true` to add fees on top.
 - Conversions are processed in the block after the transaction is mined.
 
@@ -344,4 +344,7 @@ Supply decreased from 1150 to 1140.
 - `getcurrencybalance` — check balances before sending
 - `getcurrency` — inspect currency definitions
 - [`signdata`](../identity/signdata.md) — data object format used by the `data` output field
+- [MEV-Resistant DeFi](../../concepts/mev-resistant-defi.md) — why same-block pricing eliminates front-running
+- [Fractional Basket Conversions](../../concepts/fractional-basket-conversions.md) — how reserve pricing works
+- [Currency Launch Lifecycle](../../concepts/currency-launch-lifecycle.md) — preconversion, launch, and minting
 - [Atomic Swaps on Verus](../../concepts/atomic-swaps.md) — alternative for trustless trading
