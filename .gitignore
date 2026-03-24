@@ -1,0 +1,22 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Local MCP config
+.mcp.json
+
+# Working files (internal research, not for reviewers)
+rpc-inventory/
+plan.md
+
+# Node modules (for when VitePress is added later)
+node_modules/
+dist/
+.vitepress/cache/
