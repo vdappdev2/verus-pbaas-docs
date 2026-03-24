@@ -31,7 +31,7 @@ registernamecommitment "name" "controladdress" ("referralidentity") ("parentname
 | 2 | `controladdress` | string | Yes | — | Address that controls this commitment — must be in the current wallet. Not necessarily the address that will control the identity. Accepts R-addresses, VerusID friendly names (`"myid@"`), and i-addresses. Does **not** accept z-addresses. |
 | 3 | `referralidentity` | string | No | — | Referral identity for discounted registration. Discount amount varies by currency definition (`idreferrallevels` in `definecurrency`). |
 | 4 | `parentnameorid` | string | No | — | Parent currency name or i-address. For root IDs on VRSC/vrsctest, omit. For sub-IDs under a currency namespace, pass the currency name. |
-| 5 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`, `"z*"`), specific addresses, and VerusID names. z-address works for root-namespace commitments but fails for sub-IDs under non-native namespaces. |
+| 5 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`), specific addresses, and VerusID names. Specific z-addresses work for root-namespace commitments but fail for sub-IDs under non-native namespaces. |
 
 ---
 

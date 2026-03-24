@@ -29,7 +29,7 @@ updateidentity "jsonidentity" (returntx) (tokenupdate) (feeoffer) (sourceoffunds
 | 2 | `returntx` | boolean | No | `false` | Return hex instead of broadcasting. |
 | 3 | `tokenupdate` | boolean | No | `false` | Use ID control token for authority instead of primary addresses. |
 | 4 | `feeoffer` | number | No | standard fee | Non-standard fee. |
-| 5 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`, `"z*"`), specific addresses, and VerusID names. z-address works (fees are native coin). |
+| 5 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`), specific addresses (including z-addresses), and VerusID names. |
 
 ### Identity object
 

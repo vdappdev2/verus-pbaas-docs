@@ -32,7 +32,7 @@ setidentitytimelock "identity" '{"unlockatblock":n}' (returntx) (feeoffer) (sour
 | 2 | `locks` | object | Yes | — | One of `setunlockdelay` or `unlockatblock` (mutually exclusive) |
 | 3 | `returntx` | boolean | No | `false` | Return hex instead of broadcasting |
 | 4 | `feeoffer` | number | No | standard fee | Non-standard fee |
-| 5 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`, `"z*"`). |
+| 5 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`), specific addresses, and VerusID names. |
 
 ### Lock operations
 

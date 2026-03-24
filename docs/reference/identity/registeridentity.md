@@ -28,7 +28,7 @@ registeridentity "jsonidregistration" (returntx) (feeoffer) (sourceoffunds)
 | 1 | `jsonidregistration` | object | Yes | — | Registration object containing commitment data and identity definition. See [Registration object](#registration-object). |
 | 2 | `returntx` | boolean | No | `false` | Return hex instead of broadcasting. |
 | 3 | `feeoffer` | number | No | standard fee | Fee amount. Use [fee discovery](#fee-discovery) to find the correct amount. |
-| 4 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`, `"z*"`), specific addresses, and VerusID names. z-address works for root IDs; fails for sub-IDs under non-native namespaces. |
+| 4 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`), specific addresses, and VerusID names. Specific z-addresses work for root IDs; fail for sub-IDs under non-native namespaces. |
 
 ### Registration object
 

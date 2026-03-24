@@ -29,7 +29,7 @@ revokeidentity "identity" (returntx) (tokenrevoke) (feeoffer) (sourceoffunds)
 | 2 | `returntx` | boolean | No | `false` | Return hex instead of broadcasting |
 | 3 | `tokenrevoke` | boolean | No | `false` | Use ID control token to revoke. Token must be in wallet. |
 | 4 | `feeoffer` | number | No | standard fee | Non-standard fee |
-| 5 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`, `"z*"`), specific addresses, and VerusID names. z-address works. |
+| 5 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`), specific addresses (including z-addresses), and VerusID names. |
 
 ---
 

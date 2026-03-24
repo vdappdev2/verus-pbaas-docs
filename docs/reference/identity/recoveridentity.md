@@ -29,7 +29,7 @@ recoveridentity "jsonidentity" (returntx) (tokenrecover) (feeoffer) (sourceoffun
 | 2 | `returntx` | boolean | No | `false` | Return hex instead of broadcasting |
 | 3 | `tokenrecover` | boolean | No | `false` | Use ID control token to recover. Token must be in wallet. |
 | 4 | `feeoffer` | number | No | standard fee | Non-standard fee |
-| 5 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`, `"z*"`), specific addresses, and VerusID names. z-address works. |
+| 5 | `sourceoffunds` | string | No | `"*"` | Funding source. Supports wildcards (`"*"`, `"R*"`, `"i*"`), specific addresses (including z-addresses), and VerusID names. |
 
 ---
 
@@ -50,7 +50,7 @@ Recovery uses the same identity JSON as [`updateidentity`](updateidentity.md), b
 | `revocationauthority` | Carried over if omitted |
 | `recoveryauthority` | Carried over if omitted |
 | `privateaddress` | Carried over if omitted. `null` clears. `""` preserves. |
-| `contentmultimap` | Behavior TBD |
+| `contentmultimap` | **Does NOT carry over** — cleared to `{}` when omitted (same as `updateidentity`) |
 | `timelock` | **Does NOT carry over** — omitting resets to 0. Including `timelock: N` sets an absolute lock (flags=0), not a delay lock. |
 
 ---
