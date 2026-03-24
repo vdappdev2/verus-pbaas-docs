@@ -14,21 +14,21 @@ This is analogous to a bank hold on large withdrawals — the delay gives time f
 
 ## Two types of locks
 
-### Delay lock (recommended)
+### Delay lock
 
 Set via [`setidentitytimelock`](../reference/identity/setidentitytimelock.md) with `setunlockdelay`. The identity stores a delay duration (in blocks) and enters a locked state (`flags: 2`).
 
 To spend, the owner must first trigger a countdown (`unlockatblock: 0`), then wait for the delay to elapse. During the countdown, anyone monitoring the identity can see the unlock in progress and revoke if unauthorized.
 
-**This is the safe, recommended approach.**
+**Pay attention to be safe**
 
-### Absolute lock (dangerous)
+### Absolute lock
 
 Set by including `timelock: N` in the identity JSON during [`registeridentity`](../reference/identity/registeridentity.md) or [`recoveridentity`](../reference/identity/recoveridentity.md). The identity is locked until block height N.
 
 **Absolute locks cannot be removed by `updateidentity`** — only by revoke+recover. If set incorrectly (e.g., a block height far in the future), the identity is effectively bricked until that height is reached or a revoke+recover cycle is performed.
 
-**Avoid absolute locks.** Use `setidentitytimelock` with delay locks instead.
+**Use revocationauthority and recoveryauthority.** Use as a safeguard whenever setting timelocks.
 
 ---
 
