@@ -2,6 +2,8 @@
 
 Store encrypted data in a VerusID's `contentmultimap` so that the ciphertext is publicly visible on-chain but only authorized parties can decrypt it. This enables selective disclosure — share decryption keys with specific parties while the data remains publicly anchored.
 
+> **This how-to is for the identity content path**, where encryption is manual. For private data storage to z-addresses, use `sendcurrency:data` directly — it encrypts automatically and does not require `signdata`. See [How to Store and Retrieve Private Data](store-and-retrieve-private-data.md).
+
 **Prerequisites:**
 - A VerusID you control
 - A Sapling z-address in the wallet (the encryption target — generate one with `z_getnewaddress`)

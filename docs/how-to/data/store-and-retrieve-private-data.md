@@ -25,7 +25,7 @@ Alternatively, if the data should be readable by a specific VerusID, use `"ID@:p
 
 ## Step 2: Send data to the z-address
 
-Use `sendcurrency` with the `data` parameter. The `fromaddress` can be any funded address — it does not need to be a z-address.
+Use `sendcurrency` with the `data` parameter. `sendcurrency` handles encoding and encryption internally — you do **not** need to call `signdata` first. The data is automatically encrypted to the destination z-address. The `fromaddress` can be any funded address — it does not need to be a z-address.
 
 ### Store a text message
 
@@ -149,11 +149,9 @@ Save the entire object under the `i4GC1YGEVD21...` key — you will pass it to `
 
 ---
 
-## Step 5: Export the viewing key (if needed)
+## Step 5: Export the viewing key
 
-If your wallet holds the z-address spending key, `decryptdata` auto-decrypts without additional parameters. Skip to Step 6.
-
-If you need to decrypt on a different machine, or grant read access to a third party, export the extended viewing key:
+Export the extended viewing key for the destination z-address. The EVK is **required** for decrypting z-address data — without it, `decryptdata` returns the data still encrypted (`flags: 5`) even if the wallet holds the spending key.
 
 ```
 z_exportviewingkey "zs1..."
@@ -201,7 +199,7 @@ decryptdata '{
 - `datadescriptor` — the descriptor object from Step 4
 - `txid` — the transaction containing the data
 - `retrieve: true` — instructs the daemon to fetch and decrypt
-- `evk` — the extended viewing key (omit if the wallet holds the z-address spending key)
+- `evk` — the extended viewing key (required for z-address data — do not omit)
 
 Returns the decrypted payload:
 
@@ -236,6 +234,22 @@ Output:
 hello from MCP data test 2026-03-22
 ```
 
+For binary files (images, PDFs, etc.), write the hex to a file instead:
+
+```python
+binary = bytes.fromhex(objectdata_hex)
+with open("recovered-image.png", "wb") as f:
+    f.write(binary)
+```
+
+Or via shell:
+
+```
+echo "<hex>" | xxd -r -p > recovered-image.png
+```
+
+> Full binary round-trip confirmed on vrsctest, 2026-03-24: a 898 KB PNG stored via `sendcurrency:data` with `filename`, retrieved via `z_listreceivedbyaddress` + `decryptdata`, and decoded from hex — byte-for-byte identical to the original (MD5 match).
+
 ---
 
 ## Cost
@@ -246,15 +260,19 @@ Data storage fees scale with transaction size. Observed on vrsctest:
 |---|---|---|
 | Short text message | 1587 bytes | 0.00354 VRSCTEST |
 
-Larger payloads (files, base64-encoded data) will produce larger transactions with proportionally higher fees.
+Larger payloads produce larger transactions with proportionally higher fees. The maximum data payload is **1,000,000 bytes (1 MB)**. A 898 KB PNG image cost 9.48 VRSCTEST.
 
 ---
 
 ## Common pitfalls
 
+**Do not call `signdata` first.** `sendcurrency:data` and `signdata` are independent pipelines that share the same input keys (`message`, `messagehex`, etc.). Passing `signdata`'s output as the `data` parameter fails. `sendcurrency` handles encryption automatically — do not pass `encrypttoaddress` either. For the identity content path (where `signdata` *is* needed), see [How to Encrypt Data on a Public Identity](encrypt-data-on-public-identity.md).
+
 **Destination must be a z-address.** Sending data to a transparent address or VerusID (without `:private`) fails with "Cannot use data parameter unless sending to a private address."
 
-**Hex output requires decoding.** `decryptdata` returns content as hex in `objectdata`, not as plaintext. The caller must decode it.
+**Always pass the EVK for z-address data.** Without the EVK, `decryptdata` returns data still encrypted (`flags: 5`) even if the wallet holds the spending key. This is specific to z-address data retrieved via `datadescriptor` + `txid` + `retrieve: true`. Export the EVK with `z_exportviewingkey` and always include it. (Confirmed 2026-03-24.)
+
+**Hex output requires decoding.** `decryptdata` returns content as hex in `objectdata`, not as plaintext. The caller must decode it — text via `xxd -r -p`, binary files via hex-to-bytes conversion.
 
 **Older data remains visible.** `z_listreceivedbyaddress` returns all data ever sent to the z-address, not just the most recent. Filter by `txid` or block height as needed.
 

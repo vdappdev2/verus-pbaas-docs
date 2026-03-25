@@ -11,7 +11,9 @@
 
 Generate a hash and signature of data using a VerusID or transparent address. Supports multiple input formats, four hash algorithms, encryption to z-addresses, VDXF key binding, and Merkle Mountain Range construction. Nothing is stored on the blockchain — the signed output is returned for the caller to use.
 
-The data object format is shared with `sendcurrency`'s `data` parameter. Use `signdata` when you want to sign without storing, encrypt data before storing on an identity via [`updateidentity`](../identity/updateidentity.md), or build MMR proofs over multiple data items.
+`signdata` and `sendcurrency`'s `data` parameter accept the same **input** keys (`message`, `messagehex`, `filename`, etc.), but they are independent pipelines — `signdata`'s output is not passed to `sendcurrency`. `sendcurrency` handles its own encoding and encryption internally.
+
+Use `signdata` when you want to sign without storing, encrypt data before storing on an identity via [`updateidentity`](../identity/updateidentity.md), or build MMR proofs over multiple data items. For private data storage to z-addresses, use `sendcurrency:data` directly — it encrypts automatically.
 
 ---
 
@@ -42,9 +44,9 @@ The input is a single JSON object with the fields below.
 | `filename` | string | Path to local file. Requires `-enablefileencryption` daemon flag. | Confirmed |
 | `datahash` | string | Pre-computed 256-bit hex hash. Signs the hash directly without hashing again — produces the same signature as signing the original data. | Confirmed |
 | `messagebase64` | string | Base64-encoded data | Fails in daemon v2000753 ("Invalid parameter for data output") |
-| `vdxfdata` | object | VDXF-encoded structured data | Not tested |
+| `vdxfdata` | string or object | VDXF-encoded structured data. **String form** hashes the raw string (equivalent to `message`). **Object form** performs VDXF binary serialization before hashing — use this for canonical signing of VDXF-structured content. | Confirmed |
 
-> Input mode status confirmed on vrsctest, 2026-03-24 with `test1.mcp3@`.
+> Input mode status confirmed on vrsctest, 2026-03-24 with `test1.mcp3@`. `vdxfdata` string form produces the same hash as `message` with identical content; object form produces a different hash due to VDXF binary serialization.
 
 ### Hash algorithm
 
@@ -244,6 +246,20 @@ signdata '{"address":"test1.mcp3@", "message":"secret data", "encrypttoaddress":
 signdata '{"address":"test1.mcp3@", "message":"attested data", "vdxfkeynames":["vrsc::data.type.string"]}'
 ```
 
+### Sign VDXF-structured data
+
+Object form — performs VDXF binary serialization before hashing:
+
+```
+signdata '{"address":"test1.mcp3@", "vdxfdata":{"iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c": "hello from vdxfdata test"}}'
+```
+
+String form — equivalent to `message` (no serialization):
+
+```
+signdata '{"address":"test1.mcp3@", "vdxfdata":"{\"iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c\": \"hello from vdxfdata test\"}"}'
+```
+
 ### Build an MMR
 
 ```
@@ -255,7 +271,7 @@ signdata '{"address":"test1.mcp3@", "createmmr":true, "mmrdata":[{"message":"lea
 ## See also
 
 - [`verifysignature`](verifysignature.md) — verify a signature from `signdata`
-- [`sendcurrency`](../multichain/sendcurrency.md) — the `data` parameter uses the same object format for on-chain storage
+- [`sendcurrency`](../multichain/sendcurrency.md) — the `data` parameter accepts the same input keys for on-chain storage (independent pipeline — does not consume `signdata` output)
 - [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — the two storage paths and encryption model
 - [How to Sign and Verify Data](../../how-to/data/sign-and-verify-data.md) — step-by-step signing workflow
 - [How to Encrypt Data on a Public Identity](../../how-to/data/encrypt-data-on-public-identity.md) — signdata → updateidentity → decryptdata flow

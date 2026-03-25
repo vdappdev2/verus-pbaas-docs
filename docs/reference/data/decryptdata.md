@@ -53,7 +53,7 @@ The input is a single JSON object.
 | `evk` | string | Sapling extended full viewing key. Export via [`z_exportviewingkey`](z_exportviewingkey.md). Grants read access without spending authority. |
 | `ivk` | string | Sapling incoming viewing key (hex format). Alternative to EVK. |
 
-If the wallet holds the z-address spending key, neither `evk` nor `ivk` is needed — the daemon auto-decrypts.
+For **encrypted identity content** (DataDescriptors with `flags: 5` and `epk`), the wallet auto-decrypts if it holds the z-address spending key. For **z-address data** retrieved via `datadescriptor` + `txid` + `retrieve: true`, the EVK must be passed explicitly — without it, the daemon returns data still encrypted (`flags: 5`). Always pass the EVK for z-address data.
 
 The SSK (specific symmetric key) for per-object decryption is passed inside the `datadescriptor` object as the `ssk` field.
 
@@ -96,7 +96,7 @@ Four methods tested on vrsctest, 2026-03-23:
 
 | Method | Input | Result |
 |--------|-------|--------|
-| Wallet auto-decrypt | `datadescriptor` (encrypted, with `epk`) | **Works** — wallet recognizes the z-address and decrypts |
+| Wallet auto-decrypt | `datadescriptor` (encrypted, with `epk`) | **Works for identity content** — wallet recognizes the z-address and decrypts. **Does not work for z-address data** (`retrieve: true` path) — returns `flags: 5` without EVK. |
 | Explicit EVK | `datadescriptor` + `evk` | **Works** — decrypts without spending key |
 | SSK per-object | `datadescriptor` (with `ssk` + `epk`) | **Works** — decrypts only this specific object |
 | `iddata` query | `identityid` + `vdxfkey` + `getlast` | **Fails** for encrypted content — flags mismatch (5 → 37) |
@@ -106,7 +106,8 @@ Four methods tested on vrsctest, 2026-03-23:
 
 ## Important behaviors
 
-- **Hex output.** `objectdata` is always hex-encoded. Decode it to recover the original content (e.g., `echo "hex..." | xxd -r -p`).
+- **Always pass the EVK for z-address data.** When using `datadescriptor` + `txid` + `retrieve: true`, the EVK is required even if the wallet holds the spending key. Without it, the daemon returns data still encrypted (`flags: 5`). Confirmed 2026-03-24 with a 898 KB PNG.
+- **Hex output.** `objectdata` is always hex-encoded. Decode it to recover the original content — text via `echo "hex..." | xxd -r -p`, binary files via `bytes.fromhex()` or equivalent.
 - **`retrieve: true` is required for z-address data.** Without it, the daemon does not fetch the referenced data from the transaction.
 - **Use the original descriptor for encrypted identity content.** The on-chain version has modified flags (5 → 37) that break decryption. Cache the original from `signdata` output.
 - **The full `mmrdescriptor_encrypted` does not work.** Pass individual `datadescriptors[0]` from the MMR descriptor, not the complete object.

@@ -11,8 +11,8 @@ Verus provides two distinct paths for storing arbitrary data on-chain. Each path
 | **Store via** | `sendcurrency` with `data` parameter | `updateidentity` with `contentmultimap` |
 | **Retrieve via** | `z_listreceivedbyaddress` then `decryptdata` | `getidentity`, `getidentitycontent`, `getidentityhistory` |
 | **Visibility** | Private — encrypted to the destination z-address | Public — readable by anyone on-chain |
-| **Encryption** | Automatic (destination z-address encrypts) | Manual (encrypt with `signdata` first, then store ciphertext) |
-| **Data format** | `signdata` object format | VDXF-keyed entries (simple typed values or DataDescriptors) |
+| **Encryption** | Automatic — `sendcurrency` encrypts to the destination z-address (explicit `encrypttoaddress` rejected) | Manual — encrypt with `signdata` + `encrypttoaddress` first, then store ciphertext via `updateidentity` |
+| **Data format** | Same input keys as `signdata` (`message`, `messagehex`, etc.) — but independent pipeline | VDXF-keyed entries (simple typed values or DataDescriptors) |
 | **Key requirement** | Destination must be a z-address or `"ID@:private"` | Identity must be controlled by the caller |
 
 Both paths store data immutably on-chain. Once written, data cannot be deleted — only superseded by newer content (in the identity path) or left in place (in the z-address path).
@@ -83,41 +83,47 @@ Content in `contentmultimap` is public by default. To store encrypted data on a 
 
 ---
 
-## The data object format
+## The data input format
 
-Both storage paths use the same data object format, defined by `signdata`. The format supports multiple input modes:
+Both `sendcurrency:data` and `signdata` accept the same input keys for specifying data content:
 
 | Field | Type | Description |
 |---|---|---|
 | `message` | string | Plain text message |
 | `filename` | string | Local file path (requires `-enablefileencryption` daemon flag) |
-| `hex` | string | Raw hex data |
-| `base64` | string | Base64-encoded data |
+| `messagehex` | string | Raw hex data |
+| `messagebase64` | string | Base64-encoded data (broken in daemon v2000753 — use `messagehex`) |
 | `datahash` | string | Hash-only reference (stores the hash, not the data) |
-| `vdxfdata` | object | VDXF-encoded structured data |
+| `vdxfdata` | string or object | VDXF-encoded structured data. Object form performs VDXF binary serialization; string form is equivalent to `message`. |
 
 Only one input mode should be used per data object.
 
-### Signing fields
+### Two independent pipelines
+
+Although `sendcurrency:data` and `signdata` share the same input vocabulary, **they are independent pipelines** — the output of `signdata` is not passed to `sendcurrency`.
+
+| | `sendcurrency:data` | `signdata` |
+|---|---|---|
+| **Purpose** | Store data on-chain at a z-address | Sign, encrypt, or build MMRs off-chain |
+| **Encryption** | Automatic — always encrypts to the destination z-address | Manual — use `encrypttoaddress` |
+| **`encrypttoaddress`** | **Rejected** — encryption is implicit | Accepted — specifies which z-address to encrypt to |
+| **On-chain effect** | Broadcasts a transaction | None — returns result for caller to use |
+| **Typical next step** | Retrieve with `z_listreceivedbyaddress` + `decryptdata` | Pass encrypted output to `updateidentity`, or verify with `verifysignature` |
+
+> Confirmed on vrsctest, 2026-03-24. Passing `signdata` output as `sendcurrency:data` returns "Must include one and only one of filename, message, messagehex, messagebase64, and datahash." Passing `encrypttoaddress` inside `sendcurrency:data` returns "Data output may only be sent to a z-address, is always encrypted, and may not have an explicit encrypttoaddress option."
+
+### signdata-only fields
+
+These fields are accepted by `signdata` but not by `sendcurrency:data`:
 
 | Field | Type | Description |
 |---|---|---|
 | `address` | string | Identity or t-address to sign with |
 | `hashtype` | string | Hash algorithm: `"sha256"` (default), `"sha256D"`, `"blake2b"`, `"keccak256"` |
-
-### Encryption fields
-
-| Field | Type | Description |
-|---|---|---|
 | `encrypttoaddress` | string | Sapling z-address to encrypt to |
-
-### MMR fields (Merkle Mountain Range)
-
-| Field | Type | Description |
-|---|---|---|
 | `createmmr` | boolean | Build an MMR over the data objects |
 | `mmrdata` | array | Array of data objects to include in the MMR |
-| `mmrsalt` | boolean | Salt leaf nodes for privacy |
+| `mmrsalt` | array | Array of 64-char hex salts, one per MMR leaf |
 | `priormmr` | string | Reference to a prior MMR to extend |
 
 > [!NOTE]
@@ -137,9 +143,11 @@ Verus provides three levels of decryption access, enabling fine-grained control 
 
 ### Spending key (auto-decrypt)
 
-If the wallet holds the z-address spending key, `decryptdata` auto-decrypts with no additional parameters. This is the simplest path — the wallet recognizes the ciphertext and decrypts transparently.
+If the wallet holds the z-address spending key, `decryptdata` can auto-decrypt for **encrypted identity content** (DataDescriptors with `flags: 5` and `epk`).
 
-> Confirmed on vrsctest, 2026-03-23.
+> **Caveat for z-address data:** When decrypting data stored via `sendcurrency` (using the `datadescriptor` + `txid` + `retrieve: true` path), the EVK must be passed explicitly — without it, the daemon returns the data still encrypted (`flags: 5`). This differs from identity content decryption, where wallet auto-decrypt works. Always pass the EVK for z-address data to be safe.
+
+> Auto-decrypt confirmed for identity content on vrsctest, 2026-03-23. EVK requirement for z-address data confirmed 2026-03-24 (898 KB PNG returned `flags: 5` without EVK, `flags: 2` with EVK).
 
 ### Extended viewing key (EVK)
 
@@ -164,11 +172,11 @@ A hex-format viewing key passed as the `ivk` parameter to `decryptdata`. Functio
 
 ## Signing without storage
 
-`signdata` signs data off-chain using the same object format as `sendcurrency:data`. It does not store anything on the blockchain. The signed output includes a structured `signaturedata` object that can be passed to `verifysignature` for verification.
+`signdata` signs data off-chain. It accepts the same input keys as `sendcurrency:data` but does not store anything on the blockchain. The signed output includes a structured `signaturedata` object that can be passed to `verifysignature` for verification.
 
 Use cases:
 - **Attestations:** Sign a statement with a VerusID, share the signature for others to verify
-- **Pre-encryption:** Encrypt data with `encrypttoaddress` before storing via `updateidentity`
+- **Pre-encryption for identity content:** Encrypt data with `encrypttoaddress` before storing via `updateidentity` (the only way to get encrypted data on a public identity — `sendcurrency:data` encrypts to z-addresses automatically and does not use `signdata`)
 - **Verification workflows:** Prove that a specific identity signed specific data at a specific block height
 
 > `signdata` standalone operation and `signdata` → `verifysignature` round-trip both confirmed on vrsctest, 2026-03-22.
@@ -200,7 +208,7 @@ Use cases:
 
 - **`priormmr` is unimplemented.** Listed in `verus help signdata` but not functional. MMR creation and explicit salting are confirmed working.
 
-- **Max data size is constrained by block size** (2-4 MB) but the practical limit per transaction has not been tested.
+- **Max data size is 1,000,000 bytes (1 MB) per transaction.** The daemon enforces this limit on the raw data before encryption. Larger payloads are rejected with an explicit error. (Confirmed 2026-03-24: 898 KB PNG succeeded, 1,037,191-byte PNG rejected.)
 
 ---
 

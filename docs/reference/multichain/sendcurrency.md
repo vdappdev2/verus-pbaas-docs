@@ -91,7 +91,7 @@ Each object in the `outputs` array describes one destination and operation.
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `memo` | string | — | Encrypted message attached to shielded outputs, visible only to recipient. Max 512 bytes. Only valid when `fromaddress` is a z-address or `"ID@:private"`. |
-| `data` | object | — | Store data on-chain using the `signdata` object format. Requires a z-address destination — transparent and identity addresses are rejected. `amount` can be `0`. |
+| `data` | object | — | Store data on-chain. Uses the same **input** format as [`signdata`](../data/signdata.md) (`message`, `messagehex`, `filename`, etc.) — not signdata's output. Requires a z-address destination. `amount` can be `0`. See [Data storage](#10-data-storage). |
 | `refundto` | string | `fromaddress` | Refund destination if the operation fails (e.g., currency launch doesn't meet minimum). |
 
 ---
@@ -254,11 +254,27 @@ The destination must be a Sapling z-address (`zs1...`) or `"ID@:private"` (resol
 
 #### Input modes
 
-The `data` object follows the [`signdata`](../data/signdata.md) format. Supported input modes: `message`, `messagehex`, `filename`, `datahash`, `vdxfdata`. Use one per data object. The `filename` mode requires the `-enablefileencryption` daemon flag (startup flag or config file); all other modes work without it.
+The `data` object uses the same **input** format as [`signdata`](../data/signdata.md) — that is, the same keys you would pass to `signdata` (`message`, `messagehex`, `filename`, `datahash`, `vdxfdata`). Use one per data object. The `filename` mode requires the `-enablefileencryption` daemon flag (startup flag or config file); all other modes work without it.
+
+> **`sendcurrency` is not a consumer of `signdata` output.** `signdata` returns a signed/encrypted result object; that object cannot be passed as the `data` parameter. `sendcurrency` handles encoding, signing, and encryption internally. The two commands share the same input vocabulary but are independent pipelines. Use `signdata` when you need to pre-encrypt data for storage on an identity via [`updateidentity`](../identity/updateidentity.md), or for standalone signing and verification.
+
+#### Automatic encryption
+
+Data sent to a z-address is **always encrypted** to the destination address — `sendcurrency` handles this automatically. Passing `encrypttoaddress` inside the `data` object is explicitly rejected: *"Data output may only be sent to a z-address, is always encrypted, and may not have an explicit encrypttoaddress option."*
+
+This differs from the identity content path, where encryption is manual: you must call `signdata` with `encrypttoaddress` first, then store the encrypted output via `updateidentity`. See [How to Encrypt Data on a Public Identity](../../how-to/data/encrypt-data-on-public-identity.md).
+
+> Automatic encryption and `encrypttoaddress` rejection confirmed on vrsctest, 2026-03-24.
 
 #### Data with value
 
 `amount: 0` is typical for data-only operations, but data and value coexist — `amount: 0.01` with a `data` object works. The transaction appears in `z_listreceivedbyaddress` with both the amount and a data descriptor in the memo.
+
+#### Size limit
+
+The maximum data payload is **1,000,000 bytes** (1 MB). Larger files are rejected: *"File too large: ..., size = N bytes, max allowed = 1000000 bytes."* This limit applies to the raw data before encryption.
+
+> Confirmed on vrsctest, 2026-03-24. A 898 KB PNG succeeded; a 1,037,191-byte PNG was rejected.
 
 #### Fee scaling
 
@@ -268,6 +284,7 @@ Fees scale with data size:
 |---|---|---|
 | Short text message | 1587 bytes | 0.00354 VRSCTEST |
 | 38-byte text file | ~1600 bytes | 0.00357 VRSCTEST |
+| 898 KB PNG image | ~920 KB | 9.48 VRSCTEST |
 
 #### Examples
 
