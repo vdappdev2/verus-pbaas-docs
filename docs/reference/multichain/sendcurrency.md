@@ -242,15 +242,58 @@ Balance is deducted immediately; supply update in `getcurrency` takes several bl
 
 ### 10. Data storage
 
-Store arbitrary data on-chain. No value transfer required.
+Store arbitrary data on-chain, encrypted to a Sapling z-address. The data is private — only holders of the decryption key can read it.
 
-**Required:** `address` (must be a z-address), `data`
+**Required:** `address` (must be a z-address or `"ID@:private"`), `data`
+
+#### Z-address requirement
+
+The destination must be a Sapling z-address (`zs1...`) or `"ID@:private"` (resolves to the ID's assigned Sapling address). Transparent and identity addresses are rejected: "Cannot use data parameter unless sending to a private address."
+
+`fromaddress` does **not** need to be a z-address — transparent addresses and VerusID names work as the funding source.
+
+#### Input modes
+
+The `data` object follows the [`signdata`](../data/signdata.md) format. Supported input modes: `message`, `messagehex`, `filename`, `datahash`, `vdxfdata`. Use one per data object. The `filename` mode requires the `-enablefileencryption` daemon flag (startup flag or config file); all other modes work without it.
+
+#### Data with value
+
+`amount: 0` is typical for data-only operations, but data and value coexist — `amount: 0.01` with a `data` object works. The transaction appears in `z_listreceivedbyaddress` with both the amount and a data descriptor in the memo.
+
+#### Fee scaling
+
+Fees scale with data size:
+
+| Payload | Transaction size | Fee |
+|---|---|---|
+| Short text message | 1587 bytes | 0.00354 VRSCTEST |
+| 38-byte text file | ~1600 bytes | 0.00357 VRSCTEST |
+
+#### Examples
+
+**Store a message:**
 
 ```
-sendcurrency "alice@" '[{"address":"zs1...","currency":"vrsctest","amount":0,"data":{"address":"alice@","message":"hello"}}]'
+sendcurrency "myid@" '[{"address":"zs1...","amount":0,"currency":"vrsctest","data":{"message":"hello world"}}]'
 ```
 
-The `data` object follows the [`signdata`](../data/signdata.md) format. Transparent and identity addresses are rejected as destinations — use a z-address directly or `"ID@:private"`. `fromaddress` does NOT need to be a z-address; the z-address requirement is on the destination only.
+**Store a file** (requires `-enablefileencryption`):
+
+```
+sendcurrency "*" '[{"address":"zs1...","amount":0,"data":{"filename":"/home/user/document.txt"}}]'
+```
+
+**Data with value transfer:**
+
+```
+sendcurrency "myid@" '[{"address":"zs1...","amount":0.01,"currency":"vrsctest","data":{"message":"payment memo with data"}}]'
+```
+
+#### Retrieval
+
+Data stored via `sendcurrency:data` is retrieved through a pipeline: `z_listreceivedbyaddress` returns a data descriptor in the memo field, then `decryptdata` decrypts the payload using a viewing key or wallet keys. For the full step-by-step process, see [How to Store and Retrieve Private Data](../../how-to/data/store-and-retrieve-private-data.md).
+
+Decryption access can be scoped: an extended viewing key (EVK) grants read access to all data at the z-address, while a specific symmetric key (SSK) grants access to one object only. See [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) for the full access control model.
 
 ---
 
@@ -333,6 +376,16 @@ sendcurrency "broom@" '[{"address":"broom@","amount":10,"currency":"broom","burn
 
 Supply decreased from 1150 to 1140.
 
+### Data storage
+
+```
+sendcurrency "testidx@" '[{"address":"zs18wsahlhespjr3rj8sq5zy57psy0nf9854szl4r3w727mwhzpcxzxemsggg9ngq2jyt8tj2gmzsw","amount":0,"currency":"vrsctest","data":{"message":"hello from MCP data test 2026-03-22"}}]'
+```
+
+Result: `"opid-..."` → txid `f1113235b529c73645c4cab66965204abc20b14eed98e0541984fed31f49a562`
+
+Fee: 0.00354 VRSCTEST (1587-byte transaction).
+
 ---
 
 ## See also
@@ -344,6 +397,11 @@ Supply decreased from 1150 to 1140.
 - `getcurrencybalance` — check balances before sending
 - `getcurrency` — inspect currency definitions
 - [`signdata`](../data/signdata.md) — data object format used by the `data` output field
+- [`decryptdata`](../data/decryptdata.md) — decrypt data stored via `sendcurrency`
+- [`z_listreceivedbyaddress`](../data/z_listreceivedbyaddress.md) — retrieve data descriptors from z-address transactions
+- [`z_exportviewingkey`](../data/z_exportviewingkey.md) — export viewing keys for decryption access
+- [How to Store and Retrieve Private Data](../../how-to/data/store-and-retrieve-private-data.md) — full round-trip walkthrough
+- [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — storage paths and encryption model
 - [MEV-Resistant DeFi](../../concepts/mev-resistant-defi.md) — why same-block pricing eliminates front-running
 - [Fractional Basket Conversions](../../concepts/fractional-basket-conversions.md) — how reserve pricing works
 - [Currency Launch Lifecycle](../../concepts/currency-launch-lifecycle.md) — preconversion, launch, and minting

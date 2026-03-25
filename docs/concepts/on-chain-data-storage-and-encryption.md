@@ -36,7 +36,7 @@ Data sent via `sendcurrency` with the `data` parameter is encrypted to the desti
 - The source address (`fromaddress`) does **not** need to be a z-address — transparent addresses and VerusID names work as the funding source.
 - No value transfer is required (`amount: 0` is typical).
 - Fee scales with data size. Observed: 0.00354 VRSCTEST for a 1587-byte transaction containing a short message.
-- File storage requires the `-enablefileencryption` flag in the daemon config. String, hex, and base64 data work without this flag.
+- File storage requires the `-enablefileencryption` daemon flag (startup flag or config file). String, hex, and base64 data work without this flag.
 
 > All requirements confirmed on vrsctest, 2026-03-22.
 
@@ -121,7 +121,7 @@ Only one input mode should be used per data object.
 | `priormmr` | string | Reference to a prior MMR to extend |
 
 > [!NOTE]
-> `priormmr` is listed in the daemon help text but marked as unimplemented. MMR fields have not been tested end-to-end.
+> `priormmr` is listed in the daemon help text but is unimplemented. `createmmr`, `mmrdata`, and `mmrsalt` (with 64-char hex values) are confirmed working. See [`signdata`](../reference/data/signdata.md) for details.
 
 ---
 
@@ -194,9 +194,11 @@ Use cases:
 
 - **`decryptdata` with `iddata` does not work for encrypted identity content.** The daemon's flags modification (5 → 37) when storing DataDescriptors in `contentmultimap` breaks the one-step query-and-decrypt path. Applications must cache the original encrypted DataDescriptor from `signdata` output. (Confirmed 2026-03-23.)
 
-- **File storage requires `-enablefileencryption`.** The `filename` input mode in the data object reads files from the local filesystem, which is disabled by default. Add `-enablefileencryption` to the daemon config to enable it. String, hex, and base64 modes work without this flag. (File storage not yet tested end-to-end.)
+- **File storage requires `-enablefileencryption`.** The `filename` input mode reads files from the local filesystem, which is disabled by default. Pass `-enablefileencryption` at daemon startup for occasional use, or add it to the daemon config file for persistent access. String, hex, and base64 modes work without this flag. Full round-trip confirmed on vrsctest, 2026-03-24.
 
-- **MMR features are untested.** The `createmmr`, `mmrdata`, and `mmrsalt` fields are documented in `verus help signdata` but have not been verified with live testing. `priormmr` is explicitly marked as unimplemented in the help text.
+- **MMR salting crash bug.** `mmrsalt` values must be 64-character hex strings (256-bit hashes). Passing arbitrary strings (e.g., `"customsalt1"`) crashes the daemon with an assertion failure in `uint256.cpp`. The daemon should validate input and return an error. (Daemon v2000753.)
+
+- **`priormmr` is unimplemented.** Listed in `verus help signdata` but not functional. MMR creation and explicit salting are confirmed working.
 
 - **Max data size is constrained by block size** (2-4 MB) but the practical limit per transaction has not been tested.
 

@@ -226,7 +226,7 @@ signdata '{"address":"test1.mcp3@", "message":"hash algorithm test", "hashtype":
 
 ### Sign a file
 
-Requires `-enablefileencryption` in daemon config.
+Requires `-enablefileencryption` (startup flag or config file).
 
 ```
 signdata '{"address":"test1.mcp3@", "filename":"/tmp/verus-test-file.txt"}'

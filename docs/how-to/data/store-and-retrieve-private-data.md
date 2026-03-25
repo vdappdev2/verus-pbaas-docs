@@ -69,7 +69,7 @@ Replace `message` with `hex` or `base64`:
 ### Store a file
 
 > [!NOTE]
-> File storage requires `-enablefileencryption` in the daemon config file (e.g., `VRSCTEST.conf`). String, hex, and base64 data work without this flag. File storage has not been tested end-to-end.
+> File storage requires the `-enablefileencryption` daemon flag — pass it at startup for occasional use, or add it to the config file (e.g., `VRSCTEST.conf`) for persistent access. String, hex, and base64 data work without this flag.
 
 ```json
 {
