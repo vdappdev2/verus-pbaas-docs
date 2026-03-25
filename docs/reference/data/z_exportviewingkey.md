@@ -11,7 +11,7 @@
 
 Export the extended viewing key (EVK) for a Sapling z-address. The viewing key allows decryption of all data encrypted to this address without granting spending authority. Share it to grant read-only access to a third party.
 
-Pass the returned key as the `evk` parameter to [`decryptdata`](decryptdata.md), or import it on another node with `z_importviewingkey`.
+Pass the returned key as the `evk` parameter to [`decryptdata`](decryptdata.md), or import it on another node with [`z_importviewingkey`](z_importviewingkey.md).
 
 ---
 

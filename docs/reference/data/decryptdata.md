@@ -170,6 +170,7 @@ decryptdata '{
 - [`signdata`](signdata.md) — encrypt data and produce descriptors for decryption
 - [`z_listreceivedbyaddress`](z_listreceivedbyaddress.md) — retrieve data descriptors from z-address transactions
 - [`z_exportviewingkey`](z_exportviewingkey.md) — export viewing keys for decryption
+- [`z_importviewingkey`](z_importviewingkey.md) — import viewing keys for implicit decryption
 - [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — the encryption model and access control levels
 - [How to Store and Retrieve Private Data](../../how-to/data/store-and-retrieve-private-data.md) — full z-address round-trip
 - [How to Encrypt Data on a Public Identity](../../how-to/data/encrypt-data-on-public-identity.md) — signdata → updateidentity → decryptdata flow
