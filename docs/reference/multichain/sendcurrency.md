@@ -250,7 +250,7 @@ Store arbitrary data on-chain. No value transfer required.
 sendcurrency "alice@" '[{"address":"zs1...","currency":"vrsctest","amount":0,"data":{"address":"alice@","message":"hello"}}]'
 ```
 
-The `data` object follows the [`signdata`](../identity/signdata.md) format. Transparent and identity addresses are rejected as destinations — use a z-address directly or `"ID@:private"`. `fromaddress` does NOT need to be a z-address; the z-address requirement is on the destination only.
+The `data` object follows the [`signdata`](../data/signdata.md) format. Transparent and identity addresses are rejected as destinations — use a z-address directly or `"ID@:private"`. `fromaddress` does NOT need to be a z-address; the z-address requirement is on the destination only.
 
 ---
 
@@ -343,7 +343,7 @@ Supply decreased from 1150 to 1140.
 - `getcurrencyconverters` — discover fractional baskets for conversion paths
 - `getcurrencybalance` — check balances before sending
 - `getcurrency` — inspect currency definitions
-- [`signdata`](../identity/signdata.md) — data object format used by the `data` output field
+- [`signdata`](../data/signdata.md) — data object format used by the `data` output field
 - [MEV-Resistant DeFi](../../concepts/mev-resistant-defi.md) — why same-block pricing eliminates front-running
 - [Fractional Basket Conversions](../../concepts/fractional-basket-conversions.md) — how reserve pricing works
 - [Currency Launch Lifecycle](../../concepts/currency-launch-lifecycle.md) — preconversion, launch, and minting

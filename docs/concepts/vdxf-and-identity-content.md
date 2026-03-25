@@ -136,7 +136,7 @@ Deletion is done via the `vrsc::identity.multimapremove` key — it marks conten
 
 Content in `contentmultimap` is public by default — anyone can read it. For encrypted content:
 
-1. Call [`signdata`](../reference/identity/signdata.md) with `encrypttoaddress` (a Sapling z-address) to produce an encrypted DataDescriptor
+1. Call [`signdata`](../reference/data/signdata.md) with `encrypttoaddress` (a Sapling z-address) to produce an encrypted DataDescriptor
 2. Store the encrypted DataDescriptor in `contentmultimap` via `updateidentity`
 3. Decrypt with `decryptdata` using the original descriptor from step 1
 
@@ -151,7 +151,9 @@ Decryption access control:
 
 ## See also
 
+- [On-Chain Data Storage and Encryption](on-chain-data-storage-and-encryption.md) — the two storage paths (z-address vs. identity) and the encryption model
 - [`getvdxfid`](../reference/identity/getvdxfid.md) — resolve VDXF URIs to i-addresses
 - [`updateidentity`](../reference/identity/updateidentity.md) — write content
 - [`getidentitycontent`](../reference/identity/getidentitycontent.md) — read content with filtering
-- [How to Store and Read Identity Content](../how-to/identity/store-and-read-content.md) — step-by-step guide
+- [How to Store and Read Identity Content](../how-to/identity/store-and-read-content.md) — step-by-step guide for public content
+- [How to Encrypt Data on a Public Identity](../how-to/data/encrypt-data-on-public-identity.md) — step-by-step guide for encrypted content
