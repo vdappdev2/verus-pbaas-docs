@@ -22,9 +22,9 @@ docs/
 ## Current coverage
 
 - **Identity** — 11 RPC reference pages, 4 concept pages, 3 how-to guides
-- **Marketplace** — 5 RPC reference pages, 1 concept page, 1 how-to guide
-- **Multichain** — 2 RPC reference pages, 3 concept pages, 1 how-to guide
-- **Data** — 6 RPC reference pages, 1 concept page, 3 how-to guides
+- **Marketplace** — 5 RPC reference pages, 2 concept pages, 1 how-to guide
+- **Multichain** — 2 RPC reference pages, 2 concept pages, 1 how-to guide
+- **Data** — 7 RPC reference pages, 2 concept pages, 5 how-to guides
 
 ## Methodology
 
