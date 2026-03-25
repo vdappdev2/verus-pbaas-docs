@@ -79,6 +79,9 @@ Replace `message` with `hex` or `base64`:
 }
 ```
 
+> [!TIP]
+> You can send multiple data payloads in one transaction by adding multiple entries to the `outputs` array, each targeting a **different** z-address. Two outputs to the same z-address in one call are rejected — use separate transactions instead.
+
 ---
 
 ## Step 3: Confirm the transaction

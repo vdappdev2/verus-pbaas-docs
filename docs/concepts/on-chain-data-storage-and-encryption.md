@@ -145,9 +145,13 @@ Verus provides three levels of decryption access, enabling fine-grained control 
 
 If the wallet holds the z-address spending key, `decryptdata` can auto-decrypt for **encrypted identity content** (DataDescriptors with `flags: 5` and `epk`).
 
-> **Caveat for z-address data:** When decrypting data stored via `sendcurrency` (using the `datadescriptor` + `txid` + `retrieve: true` path), the EVK must be passed explicitly — without it, the daemon returns the data still encrypted (`flags: 5`). This differs from identity content decryption, where wallet auto-decrypt works. Always pass the EVK for z-address data to be safe.
+> **Caveat — two different behaviors:**
+> - **On-chain data** (via `datadescriptor` + `txid` + `retrieve: true`): EVK **must** be passed explicitly — without it, the daemon returns the data still encrypted (`flags: 5`), even on the owning node.
+> - **Direct `signdata` encrypted output** (never stored on-chain): the wallet spending key auto-decrypts — EVK/SSK not strictly required on the owning node.
+>
+> Always pass the EVK for on-chain z-address data. For `signdata` output shared with third parties, provide the EVK or SSK.
 
-> Auto-decrypt confirmed for identity content on vrsctest, 2026-03-23. EVK requirement for z-address data confirmed 2026-03-24 (898 KB PNG returned `flags: 5` without EVK, `flags: 2` with EVK).
+> Auto-decrypt confirmed for identity content on vrsctest, 2026-03-23. EVK requirement for on-chain z-address data confirmed 2026-03-24. Wallet auto-decrypt for direct signdata output confirmed 2026-03-24.
 
 ### Extended viewing key (EVK)
 
@@ -159,7 +163,10 @@ The EVK grants read access to all data encrypted to a z-address without granting
 
 The SSK decrypts only the specific object it was generated for. `signdata` returns it as `signaturedata_ssk` in its output. This enables **selective disclosure** — share different SSKs with different parties to grant access to specific objects without exposing everything at the z-address.
 
-> Confirmed on vrsctest, 2026-03-23.
+> [!IMPORTANT]
+> SSK granularity is **per `signdata` call**, not per MMR leaf. If you sign three items in one `signdata` call with `createmmr: true` and `encrypttoaddress`, all three leaves share the same SSK. For per-item selective disclosure, make separate `signdata` calls for each item.
+
+> Confirmed on vrsctest, 2026-03-23. MMR SSK scope confirmed 2026-03-24.
 
 ### Incoming viewing key (IVK)
 
@@ -209,6 +216,10 @@ Use cases:
 - **`priormmr` is unimplemented.** Listed in `verus help signdata` but not functional. MMR creation and explicit salting are confirmed working.
 
 - **Max data size is 1,000,000 bytes (1 MB) per transaction.** The daemon enforces this limit on the raw data before encryption. Larger payloads are rejected with an explicit error. (Confirmed 2026-03-24: 898 KB PNG succeeded, 1,037,191-byte PNG rejected.)
+
+- **One output per z-address per transaction.** `sendcurrency` rejects any transaction that includes two or more outputs to the same z-address ("Cannot duplicate private address source or destination"). This applies to all z-address sends — data, value, or both. Multiple data payloads can be sent in one transaction if each targets a different z-address. (Confirmed 2026-03-24.)
+
+- **Contentmultimap DataDescriptor wrapping is strict.** Encrypted DataDescriptors in `contentmultimap` (for both `registeridentity` and `updateidentity`) must use `i4GC1YGEVD21afWudGoFJVdnfjJ5XWnCQv` as the inner VDXF key. Using a different inner key silently strips the content to an empty string — the transaction succeeds but the data is lost. Full round-trip confirmed: `signdata` → encrypted DataDescriptor → `registeridentity` → `decryptdata` with EVK → original plaintext. (Confirmed 2026-03-25.)
 
 ---
 

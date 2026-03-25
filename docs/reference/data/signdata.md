@@ -153,10 +153,13 @@ Additionally returns:
 | Field | Type | Description |
 |-------|------|-------------|
 | `mmrdescriptor_encrypted.datadescriptors[0]` | object | Encrypted DataDescriptor: `flags: 5`, ciphertext in `objectdata`, `epk` |
-| `signaturedata_ssk` | string | Per-object symmetric key for selective disclosure |
+| `signaturedata_ssk` | string | Symmetric key for selective disclosure — scoped to this `signdata` call |
 | `mmrdescriptor.datadescriptors[0]` | object | Plaintext DataDescriptor: `flags: 2`, original data in `objectdata`, `salt` |
 
-> Encryption output confirmed on vrsctest, 2026-03-23.
+> [!NOTE]
+> The SSK is **per `signdata` call**, not per MMR leaf. When using `createmmr` with `encrypttoaddress`, all leaves share the same SSK. For per-item selective disclosure, make separate `signdata` calls. Decrypt individual `datadescriptors` entries — `decryptdata` cannot handle the full encrypted MMR descriptor as a whole.
+
+> Encryption output confirmed on vrsctest, 2026-03-23. MMR SSK scope confirmed 2026-03-24.
 
 ### With `createmmr` / `mmrdata`
 

@@ -332,6 +332,17 @@ Tokens in multi-currency UTXOs are never lost — they are automatically returne
 
 The `outputs` array can contain multiple entries batched into one transaction: multiple recipients, multiple conversions (including through different baskets), or mixed operations (e.g., a send + a conversion).
 
+**Z-address constraint:** Each z-address may appear only once across all outputs — sending two outputs to the same z-address (whether with data, value, or both) is rejected with "Cannot duplicate private address source or destination." To store multiple data payloads at one z-address, use separate transactions.
+
+**Multiple data outputs** work when each targets a different z-address:
+
+```
+sendcurrency "myid@" '[
+  {"address":"zs1abc...","amount":0,"currency":"vrsctest","data":{"message":"first payload"}},
+  {"address":"zs1def...","amount":0,"currency":"vrsctest","data":{"message":"second payload"}}
+]'
+```
+
 ### ID control tokens
 
 Identities with `flags: 5` (combined bitfield: activated + control token) have a control token — a currency with the same name and a supply of exactly 0.00000001 (1 satoshi). Sending it via `sendcurrency` transfers revoke/recover authority. If an identity is exported before a control token is created, the exported copy cannot be controlled by the token.
