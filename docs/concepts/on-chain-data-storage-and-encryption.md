@@ -229,6 +229,8 @@ Use cases:
 - [How to Store and Retrieve Private Data](../how-to/data/store-and-retrieve-private-data.md) — step-by-step guide for z-address data
 - [How to Encrypt Data on a Public Identity](../how-to/data/encrypt-data-on-public-identity.md) — step-by-step guide for encrypted identity content
 - [How to Sign and Verify Data](../how-to/data/sign-and-verify-data.md) — signing workflow without storage
+- [How to Grant Read Access to Encrypted Data](../how-to/data/grant-read-access.md) — sharing EVKs and SSKs
+- [Merkle Mountain Ranges on Verus](merkle-mountain-ranges.md) — MMR construction and proofs via `signdata`
 - [`sendcurrency`](../reference/multichain/sendcurrency.md) — the `data` parameter for z-address storage
 - [`signdata`](../reference/data/signdata.md) — sign, encrypt, and structure data objects
-- [`decryptdata`](../reference/data/signdata.md) — decrypt on-chain data
+- [`decryptdata`](../reference/data/decryptdata.md) — decrypt on-chain data

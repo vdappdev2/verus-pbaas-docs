@@ -285,5 +285,6 @@ Larger payloads produce larger transactions with proportionally higher fees. The
 
 - [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — how the two storage paths and encryption model work
 - [How to Encrypt Data on a Public Identity](encrypt-data-on-public-identity.md) — the alternative path for public-but-encrypted data
+- [How to Grant Read Access to Encrypted Data](grant-read-access.md) — sharing EVKs and SSKs
 - [`sendcurrency`](../../reference/multichain/sendcurrency.md) — the `data` parameter
 - [`signdata`](../../reference/data/signdata.md) — the data object format

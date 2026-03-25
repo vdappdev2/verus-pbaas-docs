@@ -278,3 +278,5 @@ signdata '{"address":"test1.mcp3@", "createmmr":true, "mmrdata":[{"message":"lea
 - [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — the two storage paths and encryption model
 - [How to Sign and Verify Data](../../how-to/data/sign-and-verify-data.md) — step-by-step signing workflow
 - [How to Encrypt Data on a Public Identity](../../how-to/data/encrypt-data-on-public-identity.md) — signdata → updateidentity → decryptdata flow
+- [How to Build an MMR Proof](../../how-to/data/build-mmr-proof.md) — batched attestations with `createmmr`
+- [Merkle Mountain Ranges on Verus](../../concepts/merkle-mountain-ranges.md) — MMR concepts and properties

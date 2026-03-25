@@ -212,5 +212,6 @@ SSK-based selective disclosure is the primary pattern for encrypted identity con
 - [VDXF and Identity Content](../../concepts/vdxf-and-identity-content.md) — contentmultimap format and VDXF keys
 - [How to Store and Retrieve Private Data](store-and-retrieve-private-data.md) — the z-address path for fully private data
 - [How to Sign and Verify Data](sign-and-verify-data.md) — `signdata` without encryption or storage
+- [How to Grant Read Access to Encrypted Data](grant-read-access.md) — sharing EVKs and SSKs for selective disclosure
 - [`signdata`](../../reference/data/signdata.md) — sign and encrypt data objects
 - [`updateidentity`](../../reference/identity/updateidentity.md) — write content to an identity

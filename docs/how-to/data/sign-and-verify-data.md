@@ -133,5 +133,7 @@ Supported algorithms:
 
 - [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — the broader data framework including signing
 - [How to Encrypt Data on a Public Identity](encrypt-data-on-public-identity.md) — combining signing with encryption
+- [How to Build an MMR Proof](build-mmr-proof.md) — batched attestations with Merkle Mountain Ranges
+- [How to Grant Read Access to Encrypted Data](grant-read-access.md) — sharing EVKs and SSKs
 - [`signdata`](../../reference/data/signdata.md) — full parameter reference
 - [`verifysignature`](../../reference/data/verifysignature.md) — full parameter reference
