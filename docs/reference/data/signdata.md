@@ -33,7 +33,7 @@ The input is a single JSON object with the fields below.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `address` | string | VerusID name or transparent R-address to sign with. The identity's primary address must be in the wallet. A t-address produces a simple signature with no identity metadata. |
+| `address` | string | VerusID name or transparent R-address to sign with. The identity's primary address must be in the wallet. An R-address produces a simple signature with no identity metadata. |
 
 ### Input modes (use one)
 

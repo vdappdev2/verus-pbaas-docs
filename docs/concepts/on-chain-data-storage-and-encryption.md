@@ -118,7 +118,7 @@ These fields are accepted by `signdata` but not by `sendcurrency:data`:
 
 | Field | Type | Description |
 |---|---|---|
-| `address` | string | Identity or t-address to sign with |
+| `address` | string | Identity or R-address to sign with |
 | `hashtype` | string | Hash algorithm: `"sha256"` (default), `"sha256D"`, `"blake2b"`, `"keccak256"` |
 | `encrypttoaddress` | string | Sapling z-address to encrypt to |
 | `createmmr` | boolean | Build an MMR over the data objects |

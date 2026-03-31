@@ -27,7 +27,7 @@ The input is a single JSON object with the fields below.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `address` | string | Yes | VerusID name or t-address to verify against |
+| `address` | string | Yes | VerusID name or R-address to verify against |
 | `signature` | string | Yes | Base64-encoded signature from [`signdata`](signdata.md) output |
 | `checklatest` | boolean | No | If true, verify against the identity's current keys. Default: false (verify against keys at the signing height stored in the signature). |
 
