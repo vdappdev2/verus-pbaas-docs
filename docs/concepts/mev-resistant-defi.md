@@ -78,4 +78,5 @@ Fees are deducted from the conversion amount. There is no variable fee, no fee a
 - [Fractional Basket Conversions](fractional-basket-conversions.md) — how reserves, weights, and pricing work
 - [`sendcurrency`](../reference/multichain/sendcurrency.md) — executing conversions
 - [`definecurrency`](../reference/multichain/definecurrency.md) — creating basket currencies
-- `estimateconversion` — previewing conversion output
+- [`estimateconversion`](../reference/multichain/estimateconversion.md) — previewing conversion output
+- [How to Convert Between Currencies](../how-to/currency/convert-currencies.md) — step-by-step conversion guide

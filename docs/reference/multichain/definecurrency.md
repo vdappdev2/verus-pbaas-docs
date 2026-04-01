@@ -300,4 +300,7 @@ definecurrency '{"name":"myusdc","options":32,"systemid":"veth","parent":"vrscte
 - [Currency Launch Lifecycle](../../concepts/currency-launch-lifecycle.md) — how the launch process works
 - [Fractional Basket Conversions](../../concepts/fractional-basket-conversions.md) — how basket pricing works
 - [MEV-Resistant DeFi](../../concepts/mev-resistant-defi.md) — why conversions are front-running resistant
-- [How to Launch a Centralized Token](../../how-to/currency/launch-centralized-token.md) — step-by-step guide
+- [How to Launch a Centralized Token](../../how-to/currency/launch-centralized-token.md) — step-by-step guide for simple tokens
+- [How to Launch a Decentralized Basket Currency](../../how-to/currency/launch-basket-currency.md) — step-by-step guide for baskets
+- [`getcurrencystate`](getcurrencystate.md) — track reserve state over time
+- [`getreservedeposits`](getreservedeposits.md) — check reserve UTXOs

@@ -119,3 +119,4 @@ sendcurrency "mybrand@" '[{"address":"alice@","amount":50,"currency":"mybrand"}]
 - [`definecurrency`](../../reference/multichain/definecurrency.md) — full parameter reference
 - [`sendcurrency`](../../reference/multichain/sendcurrency.md) — sending, minting, burning, preconverting
 - [Currency Launch Lifecycle](../../concepts/currency-launch-lifecycle.md) — how the launch process works
+- [How to Launch a Decentralized Basket Currency](launch-basket-currency.md) — basket with reserves and conversions

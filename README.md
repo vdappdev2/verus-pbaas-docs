@@ -23,8 +23,8 @@ docs/
 
 - **Identity** — 11 RPC reference pages, 4 concept pages, 3 how-to guides
 - **Marketplace** — 5 RPC reference pages, 2 concept pages, 1 how-to guide
-- **Multichain** — 2 RPC reference pages, 2 concept pages, 1 how-to guide
-- **Data** — 7 RPC reference pages, 2 concept pages, 5 how-to guides
+- **Multichain** — 12 RPC reference pages, 3 concept pages, 4 how-to guides
+- **Data** — 7 RPC reference pages, 3 concept pages, 5 how-to guides
 
 ## Methodology
 

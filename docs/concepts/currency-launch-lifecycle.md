@@ -96,6 +96,10 @@ Plus any `initialcontributions` amounts, which go to reserves (baskets) or rootI
 
 - [`definecurrency`](../reference/multichain/definecurrency.md) — creating currencies
 - [`sendcurrency`](../reference/multichain/sendcurrency.md) — preconverting, minting, burning
+- [`getcurrencystate`](../reference/multichain/getcurrencystate.md) — track reserve state at any height
+- [`getreservedeposits`](../reference/multichain/getreservedeposits.md) — check reserve UTXOs
 - [Fractional Basket Conversions](fractional-basket-conversions.md) — how basket pricing works
 - [MEV-Resistant DeFi](mev-resistant-defi.md) — why all conversions are fair
 - [VerusID Lifecycle](verusid-lifecycle.md) — the identity that becomes a currency namespace
+- [How to Launch a Centralized Token](../how-to/currency/launch-centralized-token.md) — simple token walkthrough
+- [How to Launch a Decentralized Basket Currency](../how-to/currency/launch-basket-currency.md) — basket walkthrough

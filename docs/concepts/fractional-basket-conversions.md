@@ -102,3 +102,5 @@ Currency designers should model the combined effect of these parameters before l
 - [Currency Launch Lifecycle](currency-launch-lifecycle.md) — how baskets are created and launched
 - [`sendcurrency`](../reference/multichain/sendcurrency.md) — executing conversions
 - [`definecurrency`](../reference/multichain/definecurrency.md) — creating basket currencies
+- [How to Convert Between Currencies](../how-to/currency/convert-currencies.md) — step-by-step conversion guide
+- [How to Launch a Decentralized Basket Currency](../how-to/currency/launch-basket-currency.md) — basket launch walkthrough

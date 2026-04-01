@@ -187,6 +187,7 @@ The `flags` field in `currencystate` indicates the currency's lifecycle stage. I
 | `27` | Launch clearing | Transitional state at `startblock`. Launch is being processed (one block). |
 | `49` | Active (basket) | Fractional basket is live and accepting conversions. |
 | `48` | Active (non-basket) | Simple token or PBaaS chain is live. |
+| `37` | Launch failed | Currency did not meet launch requirements. Supply is `0`, reserves are `0`. |
 | `16` | Active (root chain) | Root chain state (e.g., VRSC, VRSCTEST). |
 
 Use [`getcurrencystate`](getcurrencystate.md) with a height range spanning `startblock` to observe the transition.

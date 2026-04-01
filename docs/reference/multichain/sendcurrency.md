@@ -434,3 +434,5 @@ Fee: 0.00354 VRSCTEST (1587-byte transaction).
 - [Fractional Basket Conversions](../../concepts/fractional-basket-conversions.md) — how reserve pricing works
 - [Currency Launch Lifecycle](../../concepts/currency-launch-lifecycle.md) — preconversion, launch, and minting
 - [Atomic Swaps on Verus](../../concepts/atomic-swaps.md) — alternative for trustless trading
+- [How to Convert Between Currencies](../../how-to/currency/convert-currencies.md) — step-by-step conversion guide
+- [How to Send Currency and Export IDs Cross-Chain](../../how-to/currency/cross-chain-operations.md) — cross-chain workflow
