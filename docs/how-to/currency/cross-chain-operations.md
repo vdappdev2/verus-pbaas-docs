@@ -84,7 +84,7 @@ The ID's namespace currency must already be known on the destination chain. For 
 ### Export the ID
 
 ```
-sendcurrency "myid@" '[{"currency":"VRSC","amount":0,"exportto":"vDEX","exportid":true,"address":"myid@"}]'
+sendcurrency "myid@" '[{"amount":0,"exportto":"vDEX","exportid":true,"address":"myid@"}]'
 ```
 
 - `fromaddress` (first parameter) — must be the ID being exported
@@ -95,7 +95,7 @@ sendcurrency "myid@" '[{"currency":"VRSC","amount":0,"exportto":"vDEX","exportid
 ### After export
 
 - Import the private key on the destination chain to control the exported ID there
-- The exported ID starts as a copy of the source — same addresses, authorities, and content
+- The exported ID starts as a copy of the source
 - Changes to the ID on either chain are independent from that point on
 
 > [!NOTE]
@@ -129,7 +129,7 @@ sendcurrency "myid@" '[{"currency":"kaiju","amount":100,"exportto":"vDEX","addre
 
 ### Export an ID and send it funds
 
-1. Export the namespace currency if needed (skip for root-level IDs):
+1. Export the namespace currency if needed:
 
 ```
 sendcurrency "myid@" '[{"currency":"kaiju","amount":0,"exportto":"vDEX","exportcurrency":true,"address":"myid@"}]'
@@ -138,7 +138,7 @@ sendcurrency "myid@" '[{"currency":"kaiju","amount":0,"exportto":"vDEX","exportc
 2. Export the ID:
 
 ```
-sendcurrency "alice.kaiju@" '[{"currency":"VRSC","amount":0,"exportto":"vDEX","exportid":true,"address":"alice.kaiju@"}]'
+sendcurrency "alice.kaiju@" '[{"amount":0,"exportto":"vDEX","exportid":true,"address":"alice.kaiju@"}]'
 ```
 
 3. Send funds to the exported ID on the destination chain:

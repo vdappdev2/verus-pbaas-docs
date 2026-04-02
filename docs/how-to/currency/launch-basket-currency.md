@@ -6,7 +6,7 @@ This guide walks through launching a fractional basket currency on Verus — a c
 - A VerusID to use as the currency namespace (see [How to Register a VerusID](../identity/register-identity.md))
 - Wallet funds: 200 VRSC launch fee + `initialcontributions` amounts + transaction fees (~0.0002)
 - The reserve currencies must exist on the chain (native currency is always available; others must have been imported if cross-chain)
-
+- The majority of currency definition parameters are optional or case-dependent.  The following is an example.
 ---
 
 ## Step 1: Choose reserves and weights
@@ -101,6 +101,8 @@ getcurrencystate "TB1" "1000390,1000413,5"
 | 1000390 | 0 | 0 | Just defined — no preconversions processed yet |
 | 1000400 | 5 | 29.47 | `initialcontributions` processed |
 | 1000410 | 6.9995 | 41.257 | External preconversions landed |
+
+`listcurrencies` with `launchtype:prelaunch` will also return data about the prelaunch stats and status.
 
 ### Check launch status
 
