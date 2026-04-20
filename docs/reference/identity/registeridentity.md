@@ -59,8 +59,8 @@ The `identity` object fields:
 |-------|------|----------|---------|-------------|
 | `name` | string | Yes | — | Must match the committed name |
 | `parent` | string | Yes | — | Parent namespace i-address. Always include. |
-| `primaryaddresses` | string[] | Yes | — | R-addresses that control spending. Up to 25 for multi-sig. Only transparent R-addresses — not i-addresses or z-addresses. |
-| `minimumsignatures` | number | Yes | 1 | Signatures required from `primaryaddresses`. Up to 13. |
+| `primaryaddresses` | string[] | Yes | — | R-addresses that control spending. 1–25 entries. Only transparent R-addresses — not i-addresses or z-addresses. See [VerusID Multisig](../../concepts/verusid-multisig.md). |
+| `minimumsignatures` | number | Yes | 1 | Signatures required from `primaryaddresses`. 1–13, and must be ≤ `primaryaddresses.length`. Invalid combinations are rejected with `"Invalid identity"`. |
 | `revocationauthority` | string | No | self | Identity that can revoke. Omit to default to self. |
 | `recoveryauthority` | string | No | self | Identity that can recover after revocation. Omit to default to self. |
 | `privateaddress` | string | No | none | Sapling z-address for private transactions. |
@@ -127,4 +127,6 @@ registeridentity '{"txid":"abc123...","namereservation":{"name":"alice","salt":"
 - [`registernamecommitment`](registernamecommitment.md) — step 1: create the name commitment
 - [`getidentity`](getidentity.md) — verify registration
 - [How to Register a VerusID](../../how-to/identity/register-identity.md) — end-to-end guide
+- [How to Register a Multisig VerusID](../../how-to/identity/register-multisig-identity.md) — 2-of-3 walkthrough
 - [VerusID Authority Model](../../concepts/verusid-authority-model.md) — safe authority configuration
+- [VerusID Multisig](../../concepts/verusid-multisig.md) — multisig caps and signing model

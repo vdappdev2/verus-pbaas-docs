@@ -10,7 +10,7 @@ Every VerusID has three independent authorities that control different aspects o
 
 The `primaryaddresses` and `minimumsignatures` fields define who can **spend funds** and **sign transactions** on behalf of the identity. This is the day-to-day authority — it controls the identity's wallet, authorizes sends, updates content, and signs data.
 
-- Up to 25 R-addresses for multi-sig (up to 13 signatures required)
+- Up to 25 R-addresses with a signing threshold up to 13 (see [VerusID Multisig](verusid-multisig.md))
 - Only transparent R-addresses — not i-addresses or z-addresses
 - Changed via [`updateidentity`](../reference/identity/updateidentity.md) (by the primary authority itself) or [`recoveridentity`](../reference/identity/recoveridentity.md) (by the recovery authority)
 
@@ -132,4 +132,5 @@ The authority identity only needs to be **in the wallet for signing**. It does n
 - [`revokeidentity`](../reference/identity/revokeidentity.md) — invoke revocation authority
 - [`recoveridentity`](../reference/identity/recoveridentity.md) — invoke recovery authority
 - [VerusID Lifecycle](verusid-lifecycle.md) — registration, updates, revocation, recovery
+- [VerusID Multisig](verusid-multisig.md) — caps and signing flow for the primary authority
 - [How to Set Up Identity Security](../how-to/identity/set-up-security.md) — practical guide

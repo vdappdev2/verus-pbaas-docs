@@ -37,8 +37,8 @@ updateidentity "jsonidentity" (returntx) (tokenupdate) (feeoffer) (sourceoffunds
 |-------|------|----------|----------------------|
 | `name` | string | Yes | — |
 | `parent` | string | Yes | — (always include for correct resolution) |
-| `primaryaddresses` | string[] | No | **Preserved** from current state |
-| `minimumsignatures` | number | No | **Preserved** |
+| `primaryaddresses` | string[] | No | **Preserved** from current state. 1–25 entries when set. R-addresses only. |
+| `minimumsignatures` | number | No | **Preserved**. 1–13 when set, and must be ≤ `primaryaddresses.length`. |
 | `revocationauthority` | string | No | **Preserved** |
 | `recoveryauthority` | string | No | **Preserved** |
 | `privateaddress` | string | No | **Preserved** (special: `null` clears it, `""` preserves it) |
@@ -77,6 +77,7 @@ Most fields are preserved when omitted — they carry over from the current on-c
 
 - **Do not set `flags` to the revoked value (32768) directly.** Use [`revokeidentity`](revokeidentity.md) to revoke an identity. Setting the revoked flag via `updateidentity` bypasses the intended revocation workflow.
 - **Cannot modify `timelock` via update.** Including `timelock: 0` on a locked identity is rejected. Use [`setidentitytimelock`](setidentitytimelock.md) or revoke+recover.
+- **Multisig caps are enforced at update time.** The same `M ≤ 13`, `N ≤ 25`, `M ≤ N` rules that apply at registration also apply here. Invalid combinations are rejected with `"Invalid identity"`. See [VerusID Multisig](../../concepts/verusid-multisig.md).
 - **`contentmultimap` is an append-only ledger.** Previous content remains on-chain and accessible via [`getidentitycontent`](getidentitycontent.md) even after an update clears the current multimap.
 - **Invalid contentmultimap formats** are silently ignored — the transaction confirms but content is not stored. The `{message: "text"}` format (used by `signdata`) is not valid for contentmultimap entries.
 - **z-address as `sourceoffunds`** works for all identity write operations (update, revoke, recover) since fees are native coin.
@@ -110,5 +111,6 @@ updateidentity '{"name":"alice","parent":"iJhCez...","revocationauthority":"guar
 - [`getidentity`](getidentity.md) — read current state before updating
 - [`getidentitycontent`](getidentitycontent.md) — read cumulative content history
 - [VerusID Authority Model](../../concepts/verusid-authority-model.md) — safe authority configuration
+- [VerusID Multisig](../../concepts/verusid-multisig.md) — multisig caps and signing model
 - [VDXF and Identity Content](../../concepts/vdxf-and-identity-content.md) — contentmultimap format
 - [How to Store and Read Identity Content](../../how-to/identity/store-and-read-content.md) — step-by-step guide
