@@ -20,6 +20,14 @@ namespace::group.subgroup.name
 
 Any ID namespace can define keys. This means applications and communities can create their own structured data schemas without coordination.
 
+### Reverse resolution requires definedkeys
+
+[`getvdxfid`](../reference/identity/getvdxfid.md) resolves URI → i-address deterministically. Reverse resolution (i-address → URI) is **not** possible from daemon RPC alone — the i-address is a one-way hash with no back-pointer to the original URI.
+
+The pattern for reverse lookup is **definedkeys**: the namespace owner publishes a registry entry in their own `contentmultimap` that maps each derived i-address back to its URI. A reader that wants human-readable key names ingests the namespace identity's definedkeys entries and builds a local i-address → URI map.
+
+Forward-only readers — those that already know which URIs they care about — can rely on `getvdxfid` alone and don't need definedkeys.
+
 ### System-defined keys
 
 The `vrsc::` namespace provides standard primitive types and structural types:
@@ -59,7 +67,7 @@ The `contentmultimap` field on a VerusID is where VDXF-keyed data lives. Its str
 }
 ```
 
-- **Outer key:** A VDXF key i-address identifying the application or category of content
+- **Outer key:** A VDXF key i-address identifying the application or category of content. The daemon stores and returns the i-address form only, never the original URI — see [Reverse resolution requires definedkeys](#reverse-resolution-requires-definedkeys).
 - **Array of entries:** Multiple entries per key are supported
 
 ### Entry formats
