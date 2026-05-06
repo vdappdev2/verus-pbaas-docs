@@ -2,7 +2,7 @@
 
 Store encrypted data in a VerusID's `contentmultimap` so that the ciphertext is publicly visible on-chain but only authorized parties can decrypt it. This enables selective disclosure — share decryption keys with specific parties while the data remains publicly anchored.
 
-> **This how-to is for the identity content path**, where encryption is manual. For private data storage to z-addresses, use `sendcurrency:data` directly — it encrypts automatically and does not require `signdata`. See [How to Store and Retrieve Private Data](store-and-retrieve-private-data.md).
+> **This how-to is for the manual `signdata` → `updateidentity` path** (flags:5, with per-object SSK for selective disclosure). For most encrypted-content needs the daemon-managed `{data:{}}` envelope is simpler and avoids the flag mutation caveat — see [How to Publish Encrypted Data on an Identity](publish-encrypted-data-on-identity.md). For private data storage to z-addresses, use `sendcurrency:data` directly — it encrypts automatically and does not require `signdata`. See [How to Store and Retrieve Private Data](store-and-retrieve-private-data.md).
 
 **Prerequisites:**
 - A VerusID you control
@@ -196,7 +196,7 @@ SSK-based selective disclosure is the primary pattern for encrypted identity con
 
 ## Common pitfalls
 
-**Do not put `encrypttoaddress` in `contentmultimap`.** It is a processing instruction for `signdata`, not a DataDescriptor field. Placing it in a contentmultimap entry via `updateidentity` is silently ignored — the content is stored as plaintext with no error or warning. Always encrypt with `signdata` first, then store the output. (Confirmed on vrsctest, 2026-03-23.)
+**Do not put `encrypttoaddress` directly inside a DataDescriptor entry.** It is a processing instruction, not a DataDescriptor field. Placed inside an `i4GC1YGEVD21afWudGoFJVdnfjJ5XWnCQv` wrapper that you assemble yourself, it is silently ignored — the content is stored as plaintext with no error or warning. On the manual path, encrypt with `signdata` first and store the resulting flags:5 descriptor. (Inside a `{data: {...}}` envelope it is honored — the envelope is the daemon-managed alternative; see [How to Publish Encrypted Data on an Identity](publish-encrypted-data-on-identity.md).) (Confirmed on vrsctest, 2026-03-23.)
 
 **Cache the original encrypted DataDescriptor.** The daemon modifies `flags` when storing DataDescriptors in `contentmultimap` (5 becomes 37). The `decryptdata` shortcut that queries identity content directly (`iddata` parameter with `identityid` + `vdxfkey` + `getlast`) fails for encrypted content stored via this flow — it returns "Invalid data descriptor or cannot decrypt." Applications must store the original descriptor from `signdata` output for reliable decryption. (Confirmed on vrsctest, 2026-03-23.)
 
@@ -208,8 +208,9 @@ SSK-based selective disclosure is the primary pattern for encrypted identity con
 
 ## See also
 
-- [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — how the two storage paths and encryption model work
+- [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — how the storage paths and encryption tiers work
 - [VDXF and Identity Content](../../concepts/vdxf-and-identity-content.md) — contentmultimap format and VDXF keys
+- [How to Publish Encrypted Data on an Identity](publish-encrypted-data-on-identity.md) — the daemon-managed `{data:{}}` envelope path (simpler, no flag mutation)
 - [How to Store and Retrieve Private Data](store-and-retrieve-private-data.md) — the z-address path for fully private data
 - [How to Sign and Verify Data](sign-and-verify-data.md) — `signdata` without encryption or storage
 - [How to Grant Read Access to Encrypted Data](grant-read-access.md) — sharing EVKs and SSKs for selective disclosure

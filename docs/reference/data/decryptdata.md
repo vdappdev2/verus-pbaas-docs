@@ -9,9 +9,9 @@
 
 ## Summary
 
-Decrypt a data descriptor that was encrypted to a Sapling z-address. Accepts data descriptors from two sources: (1) the memo field of `z_listreceivedbyaddress` for data stored via `sendcurrency`, or (2) the encrypted output of `signdata` for data stored in identity `contentmultimap`. Can also query and decrypt identity content directly via the `iddata` parameter.
+Decrypt a data descriptor that was encrypted to a Sapling z-address. Accepts data descriptors from three sources: (1) the memo field of `z_listreceivedbyaddress` for data stored via `sendcurrency`, (2) the encrypted output of `signdata` for data stored in identity `contentmultimap` via the manual path, or (3) on-chain DataDescriptors written via `updateidentity`'s [`{data: {...}}` envelope](../identity/updateidentity.md#the-data-envelope) — the daemon-managed path. Can also query and decrypt identity content directly via the `iddata` parameter.
 
-Decryption uses wallet keys automatically if available, or accepts explicit viewing keys (EVK/IVK) and per-object symmetric keys (SSK).
+Decryption uses wallet keys automatically if available, or accepts explicit viewing keys (EVK/IVK) and per-object symmetric keys (SSK). For default-mode envelope entries, the `ivk` is published in the on-chain DataDescriptor itself — pass the descriptor as-is and the embedded key decrypts.
 
 ---
 
@@ -44,7 +44,7 @@ The input is a single JSON object.
 | `endheight` | number | No | End block height for content query range |
 | `getlast` | boolean | No | If true, return only the most recent content entry |
 
-> **Known limitation:** `iddata` fails for encrypted content stored via `updateidentity` — returns "Invalid data descriptor or cannot decrypt". The daemon's flags modification (5 → 37) when storing DataDescriptors in `contentmultimap` breaks this path. Use `datadescriptor` with the cached original descriptor instead. Confirmed on vrsctest, 2026-03-23.
+> **Known limitation:** `iddata` fails for encrypted content stored via `updateidentity` in either form — returns "Invalid data descriptor or cannot decrypt". For manual-path content (flags:5), the daemon's flag mutation (5 → 37) on storage breaks this query. For envelope-path content (flags:13 with embedded IVK), the daemon does not auto-extract the on-chain IVK during the `iddata` query. In both cases, extract the descriptor from `getidentity` and pass it via `datadescriptor` instead. Manual-path failure confirmed on vrsctest 2026-03-23; envelope-path failure confirmed 2026-05-06.
 
 ### Decryption keys
 
@@ -92,29 +92,49 @@ Returns an array of decrypted DataDescriptors. For single-object decryption, the
 
 ## Decryption methods
 
-Four methods tested on vrsctest, 2026-03-23:
+Methods tested on vrsctest:
 
 | Method | Input | Result |
 |--------|-------|--------|
-| Wallet auto-decrypt | `datadescriptor` (encrypted, with `epk`) | **Works for identity content** — wallet recognizes the z-address and decrypts. **Does not work for z-address data** (`retrieve: true` path) — returns `flags: 5` without EVK. |
+| **Embedded IVK (flags:13)** | `datadescriptor` straight from `getidentity` (carries `epk` + on-chain `ivk`) + outer txid + `retrieve: true` | **Works** — daemon-managed `{data:{}}` envelope entries are decryptable by anyone using the published IVK. (2026-05-06) |
+| Wallet auto-decrypt | `datadescriptor` (encrypted, with `epk`) | **Works for direct `signdata` output** — wallet recognizes the z-address and decrypts. **Works for `retrieve:true` identity content** when the wallet holds the recipient z-address's spending key (not applicable to default-mode envelope entries — the daemon discards that key). |
 | Explicit EVK | `datadescriptor` + `evk` | **Works** — decrypts without spending key |
 | SSK per-object | `datadescriptor` (with `ssk` + `epk`) | **Works** — decrypts only this specific object |
-| `iddata` query | `identityid` + `vdxfkey` + `getlast` | **Fails** for encrypted content — flags mismatch (5 → 37) |
+| `iddata` query | `identityid` + `vdxfkey` + `getlast` | **Fails** for encrypted content of either flags:5 (manual path, flags mismatch 5 → 37) or flags:13 (envelope path, daemon does not auto-extract embedded IVK). Always extract the descriptor from `getidentity` and pass via `datadescriptor`. |
 | Full mmrdescriptor | Complete `mmrdescriptor_encrypted` from `signdata` | **Empty output** — no error, no result |
 
 ---
 
 ## Important behaviors
 
-- **Always pass the EVK for z-address data.** When using `datadescriptor` + `txid` + `retrieve: true`, the EVK is required even if the wallet holds the spending key. Without it, the daemon returns data still encrypted (`flags: 5`). Confirmed 2026-03-24 with a 898 KB PNG.
+- **`retrieve: true` plus the storing transaction's txid is required to fetch the actual payload.** On-chain DataDescriptors store an indirect reference (an `iP3euVSzNcXUrLNHnQnR9G6q8jeYuGSxgw` wrapper with all-zero txid); the actual ciphertext lives in the same transaction. Without `retrieve: true` you only get the reference back, not the data.
+- **For default-mode envelope entries (flags:13), the embedded `ivk` is sufficient.** Pass the descriptor straight from `getidentity` along with the txid and `retrieve: true` — the daemon uses the on-chain IVK to decrypt. No EVK export, no out-of-band key. Confirmed on vrsctest, 2026-05-06.
+- **For `encrypttoaddress`-mode entries (flags:5) and z-address data, pass an EVK or own the recipient key.** Without a viewing key (and without wallet authority over the recipient z-address), the daemon returns data still encrypted or errors. Confirmed 2026-03-24 with a 898 KB PNG and 2026-05-06 with the envelope path.
 - **Hex output.** `objectdata` is always hex-encoded. Decode it to recover the original content — text via `echo "hex..." | xxd -r -p`, binary files via `bytes.fromhex()` or equivalent.
-- **`retrieve: true` is required for z-address data.** Without it, the daemon does not fetch the referenced data from the transaction.
-- **Use the original descriptor for encrypted identity content.** The on-chain version has modified flags (5 → 37) that break decryption. Cache the original from `signdata` output.
+- **For manual-path identity content, use the original descriptor.** The on-chain version has modified flags (5 → 37) that break decryption. Cache the original from `signdata` output. The `{data:{}}` envelope path does **not** exhibit this mutation — flags:13 is preserved on-chain unchanged.
 - **The full `mmrdescriptor_encrypted` does not work.** Pass individual `datadescriptors[0]` from the MMR descriptor, not the complete object.
 
 ---
 
 ## Examples
+
+### Decrypt envelope-mode identity content (flags:13, embedded IVK)
+
+```
+decryptdata '{
+  "datadescriptor": {
+    "version": 1,
+    "flags": 13,
+    "objectdata": "<ciphertext from getidentity>",
+    "epk": "<epk from getidentity>",
+    "ivk": "<ivk from getidentity>"
+  },
+  "txid": "<updateidentity txid>",
+  "retrieve": true
+}'
+```
+
+Anyone reading the identity can run this — the IVK is published on-chain alongside the ciphertext.
 
 ### Decrypt z-address data with EVK
 
@@ -174,4 +194,5 @@ decryptdata '{
 - [`z_importviewingkey`](z_importviewingkey.md) — import viewing keys for implicit decryption
 - [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — the encryption model and access control levels
 - [How to Store and Retrieve Private Data](../../how-to/data/store-and-retrieve-private-data.md) — full z-address round-trip
-- [How to Encrypt Data on a Public Identity](../../how-to/data/encrypt-data-on-public-identity.md) — signdata → updateidentity → decryptdata flow
+- [How to Publish Encrypted Data on an Identity](../../how-to/data/publish-encrypted-data-on-identity.md) — the `{data:{}}` envelope path (flags:13 with on-chain IVK)
+- [How to Encrypt Data on a Public Identity](../../how-to/data/encrypt-data-on-public-identity.md) — manual signdata → updateidentity → decryptdata flow (flags:5, SSK selective disclosure)

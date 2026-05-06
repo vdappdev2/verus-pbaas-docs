@@ -3,8 +3,8 @@
 Share decryption keys to allow specific parties to read encrypted data — either all data at a z-address, or a single encrypted object. Verus provides two key types for this, each with different scope.
 
 **Prerequisites:**
-- Encrypted data (stored via `sendcurrency:data` to a z-address, or via `signdata` + `updateidentity` on an identity)
-- The z-address used for encryption
+- Encrypted data, stored via one of: `sendcurrency:data` to a z-address; the manual `signdata` + `updateidentity` path on an identity; or the daemon-managed `{data: {...}}` envelope inside `updateidentity`'s `contentmultimap`
+- The z-address used for encryption (when applicable — see "Envelope mode" below)
 
 ---
 
@@ -16,6 +16,19 @@ Share decryption keys to allow specific parties to read encrypted data — eithe
 | **One specific object** | Specific symmetric key (SSK) | Only the object it was generated for | Returned by `signdata` as `signaturedata_ssk` |
 
 Use EVK when the recipient should see everything at the address. Use SSK when they should see only specific items.
+
+---
+
+## Envelope mode: when no sharing is needed (or EVK suffices)
+
+The daemon-managed `{data: {...}}` envelope produces two different on-chain shapes, with different access semantics. See [How to Publish Encrypted Data on an Identity](publish-encrypted-data-on-identity.md) for the writing workflow.
+
+| Envelope variant | On-chain | What grants access |
+|---|---|---|
+| Default `{data: {<input>}}` (no `encrypttoaddress`) | `flags: 13` with on-chain `ivk` | **Already public.** The IVK is published alongside the ciphertext. Any reader who pulls the descriptor from `getidentity` and passes it to `decryptdata` with the storing txid + `retrieve: true` decrypts. No SSK exists; no sharing needed. |
+| `{data: {<input>, "encrypttoaddress": "zs1..."}}` | `flags: 5` with `epk` only | **Recipient-targeted.** The recipient holds the z-address spending key out-of-band. To grant additional parties read access, the spending-key holder exports the EVK (`z_exportviewingkey`) and shares it — same flow as Option A below. |
+
+The envelope path does not produce an SSK — `signdata`'s `signaturedata_ssk` field is only available on the manual path. For per-object selective disclosure, use the manual path described in [How to Encrypt Data on a Public Identity](encrypt-data-on-public-identity.md).
 
 ---
 
@@ -173,7 +186,7 @@ Party C  →  EVK   →  can read everything
 
 **EVK cannot be revoked.** Once shared, the recipient can read all data encrypted to that z-address, including data stored after the EVK was shared. Use SSK-based selective disclosure when you need fine-grained control.
 
-**Use the original encrypted DataDescriptor.** For identity content, the daemon modifies `flags` when storing (5 becomes 37). Always use the DataDescriptor from the original `signdata` output, not the on-chain version. See [How to Encrypt Data on a Public Identity](encrypt-data-on-public-identity.md).
+**Manual path: use the original encrypted DataDescriptor.** When you store identity content via the manual `signdata` → `updateidentity` flow, the daemon mutates `flags` (5 → 37) on storage. Use the DataDescriptor from the original `signdata` output for decryption, not the on-chain version. See [How to Encrypt Data on a Public Identity](encrypt-data-on-public-identity.md). The `{data: {...}}` envelope path does not exhibit this mutation — the on-chain descriptor from `getidentity` decrypts directly.
 
 ---
 
@@ -181,7 +194,8 @@ Party C  →  EVK   →  can read everything
 
 - [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — the encryption model and three access levels
 - [How to Store and Retrieve Private Data](store-and-retrieve-private-data.md) — z-address storage and retrieval
-- [How to Encrypt Data on a Public Identity](encrypt-data-on-public-identity.md) — the `signdata` → `updateidentity` flow
+- [How to Encrypt Data on a Public Identity](encrypt-data-on-public-identity.md) — the manual `signdata` → `updateidentity` flow (flags:5, SSK selective disclosure)
+- [How to Publish Encrypted Data on an Identity](publish-encrypted-data-on-identity.md) — the daemon-managed `{data: {...}}` envelope (flags:13 public-encrypted, or flags:5 recipient-targeted)
 - [`signdata`](../../reference/data/signdata.md) — `encrypttoaddress` and SSK output
 - [`decryptdata`](../../reference/data/decryptdata.md) — `evk`, `ivk`, and `ssk` parameters
 - [`z_exportviewingkey`](../../reference/data/z_exportviewingkey.md) — export an EVK

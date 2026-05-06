@@ -13,7 +13,7 @@ Generate a hash and signature of data using a VerusID or transparent address. Su
 
 `signdata` and `sendcurrency`'s `data` parameter accept the same **input** keys (`message`, `messagehex`, `filename`, etc.), but they are independent pipelines — `signdata`'s output is not passed to `sendcurrency`. `sendcurrency` handles its own encoding and encryption internally.
 
-Use `signdata` when you want to sign without storing, encrypt data before storing on an identity via [`updateidentity`](../identity/updateidentity.md), or build MMR proofs over multiple data items. For private data storage to z-addresses, use `sendcurrency:data` directly — it encrypts automatically.
+Use `signdata` when you want to sign without storing, build MMR proofs over multiple data items, or pre-encrypt content for SSK-based selective disclosure (the manual encrypt-then-store path on identities). For straightforward encrypted storage on an identity without per-object SSKs, prefer the daemon-managed [`{data: {...}}` envelope](../identity/updateidentity.md#the-data-envelope) inside `updateidentity`'s `contentmultimap`. For private data storage to z-addresses, use `sendcurrency:data` directly — it encrypts automatically.
 
 ---
 
@@ -277,6 +277,7 @@ signdata '{"address":"test1.mcp3@", "createmmr":true, "mmrdata":[{"message":"lea
 - [`sendcurrency`](../multichain/sendcurrency.md) — the `data` parameter accepts the same input keys for on-chain storage (independent pipeline — does not consume `signdata` output)
 - [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — the two storage paths and encryption model
 - [How to Sign and Verify Data](../../how-to/data/sign-and-verify-data.md) — step-by-step signing workflow
-- [How to Encrypt Data on a Public Identity](../../how-to/data/encrypt-data-on-public-identity.md) — signdata → updateidentity → decryptdata flow
+- [How to Encrypt Data on a Public Identity](../../how-to/data/encrypt-data-on-public-identity.md) — signdata → updateidentity → decryptdata flow (flags:5, SSK selective disclosure)
+- [How to Publish Encrypted Data on an Identity](../../how-to/data/publish-encrypted-data-on-identity.md) — the daemon-managed `{data:{}}` envelope alternative (flags:13 with on-chain IVK)
 - [How to Build an MMR Proof](../../how-to/data/build-mmr-proof.md) — batched attestations with `createmmr`
 - [Merkle Mountain Ranges on Verus](../../concepts/merkle-mountain-ranges.md) — MMR concepts and properties
