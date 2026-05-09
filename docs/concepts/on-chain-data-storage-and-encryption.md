@@ -67,13 +67,15 @@ For the full content format and VDXF key system, see [VDXF and Identity Content]
 
 ### Encrypting identity content
 
-Content in `contentmultimap` is public by default. There are three encryption tiers for identity content, each producing a different on-chain DataDescriptor shape:
+Three encryption tiers are available for content stored in `contentmultimap`. Each produces a different on-chain DataDescriptor shape. The recommended default for typical application data is the **public-encrypted envelope** — every consumer gets a uniform `decryptdata` entry path against the on-chain DataDescriptor, regardless of which application wrote the entry. Plaintext storage is the explicit opt-out, appropriate when composability with generic chain readers (cross-chain readers, block explorers, third-party indexers that consume raw `cmm`) takes priority over uniform tooling. Recipient-targeted private encryption is for content meant for one specific party.
+
+> "Public-encrypted" means **publicly readable by anyone** who calls `decryptdata` — the IVK is on-chain. It is not a privacy mode; it is the standard envelope shape for app data. The distinction from private-encrypted (recipient-targeted, IVK withheld) is significant — see the rows below.
 
 | Tier | How to write | On-chain | Who decrypts |
 |---|---|---|---|
-| **Plaintext** | Write the value directly under your VDXF key | `flags: 0` / `96` (no encryption) | Anyone, no decryption needed |
-| **Public-encrypted (envelope)** | `{data: {<input>}}` in `contentmultimap` (no `encrypttoaddress`) | `flags: 13` with on-chain `ivk` | Anyone — IVK is published; content is encrypted-at-rest for opt-in viewing |
-| **Private-encrypted (envelope or manual)** | Envelope: `{data: {<input>, "encrypttoaddress": "zs1..."}}`. Manual: `signdata --encrypttoaddress` then store the resulting flags:5 descriptor. | `flags: 5` with `epk` only (envelope), or `flags: 37` after manual storage flag mutation | Recipient z-address holder, or anyone with the EVK / IVK / SSK |
+| **Public-encrypted (envelope)** — recommended default for app data | `{data: {<input>}}` in `contentmultimap` (no `encrypttoaddress`) | `flags: 13` with on-chain `ivk` | Anyone — IVK is published; uniform `decryptdata` entry path |
+| **Plaintext** — opt-out for generic-reader composability | Write the value directly under your VDXF key | `flags: 0` / `96` (no encryption) | Anyone, no decryption needed |
+| **Private-encrypted (envelope or manual)** — single recipient | Envelope: `{data: {<input>, "encrypttoaddress": "zs1..."}}`. Manual: `signdata --encrypttoaddress` then store the resulting flags:5 descriptor. | `flags: 5` with `epk` only (envelope), or `flags: 37` after manual storage flag mutation | Recipient z-address holder, or anyone with the EVK / IVK / SSK |
 
 #### Public-encrypted via the `{data:{}}` envelope
 

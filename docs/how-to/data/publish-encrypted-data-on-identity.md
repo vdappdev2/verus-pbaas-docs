@@ -235,8 +235,8 @@ Default mode does not have this concern — the daemon uses a disposable ephemer
 
 | Goal | Mode | Why |
 |---|---|---|
-| Public profile data, attestations, application state visible on-chain | Plaintext (manual cmm, no `data:` envelope) | No reason to encrypt |
-| Content you want stored encrypted-at-rest but readable on demand (e.g., user-generated content gated by wallet UI) | **Default `{data: {...}}`** | Daemon handles encryption; readers opt-in to decrypt |
+| Typical application data on a VerusID — profiles, attestations, application state | **Default `{data: {...}}`** (recommended) | Recommended default for app data. Every consumer reads through the same `decryptdata` entry path against an on-chain DataDescriptor, regardless of which application wrote the entry. |
+| Data that must be readable by generic chain consumers without `decryptdata` — cross-chain readers, block explorers, third-party indexers consuming raw `cmm` | Plaintext (manual cmm, no `data:` envelope) | Opt-out for composability priority — the raw `cmm` value is directly consumable by readers that don't (or can't) call `decryptdata`. |
 | Content meant for a specific recipient only | `{data: {..., "encrypttoaddress": "zs1..."}}` | Recipient-targeted, no IVK published |
 | Selective per-object disclosure to multiple parties | `signdata --encrypttoaddress` then manual cmm store | Returns a per-object SSK alongside the encrypted descriptor — share different SSKs with different parties. See [How to Encrypt Data on a Public Identity](encrypt-data-on-public-identity.md). |
 
