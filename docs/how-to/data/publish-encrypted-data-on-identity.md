@@ -245,6 +245,7 @@ Default mode does not have this concern — the daemon uses a disposable ephemer
 ## See also
 
 - [On-Chain Data Storage and Encryption](../../concepts/on-chain-data-storage-and-encryption.md) — the broader encryption model and the three storage tiers
+- [How to Publish Encrypted Data on an Identity from a Wallet App](publish-encrypted-data-from-wallet.md) — the same on-chain shape via `IdentityUpdateRequest` and Verus Mobile (single-object envelope, `messagehex`)
 - [How to Encrypt Data on a Public Identity](encrypt-data-on-public-identity.md) — the manual `signdata` → `updateidentity` path for SSK-based selective disclosure
 - [How to Store and Retrieve Private Data](store-and-retrieve-private-data.md) — the z-address path via `sendcurrency:data`
 - [How to Grant Read Access to Encrypted Data](grant-read-access.md) — sharing EVKs and SSKs
