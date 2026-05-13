@@ -99,6 +99,15 @@ The DataDescriptor key (`i4GC1YGEVD21...`) wraps richer metadata: version, mimet
 
 **Best practice for labels:** Use the i-address of the VDXF key (e.g., `"label": "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c"`) rather than the string name. The i-address is deterministic and avoids resolution at read time.
 
+### Display shape depends on mimetype
+
+For `flags: 96` plaintext DataDescriptors, the `mimetype` controls how the daemon renders `objectdata` in `getidentity` output:
+
+- **`mimetype: text/plain`** — `objectdata` is rendered as `{"message": "..."}`. The string is directly readable.
+- **Any other mimetype** (e.g., `application/json`, `application/octet-stream`) — `objectdata` is rendered as a raw hex string. Opaque to direct visual inspection; a reader decodes it with `bytes.fromhex(...)` or equivalent.
+
+Both shapes are unencrypted and carry the same on-chain bytes — only the default rendering differs. The hex shape is useful when the content should be machine-decodable but not render as free-form text in block explorers or `getidentity` JSON dumps. It is not a privacy mechanism; anyone with a hex decoder can read it.
+
 ### Invalid formats
 
 - **Bare strings** in the array (e.g., `["text"]`) are silently ignored — the transaction confirms but content is not stored
@@ -129,6 +138,17 @@ Use [`updateidentity`](../reference/identity/updateidentity.md) with `contentmul
 **Critical rule:** Omitting `contentmultimap` in an update **clears it to `{}`**. To add content without losing existing content, read the current state first with `getidentity`, merge your changes, then update with the combined content.
 
 Content can also be set at registration time by including `contentmultimap` in the identity definition passed to [`registeridentity`](../reference/identity/registeridentity.md).
+
+---
+
+## Authority over vdxfkey writes
+
+The chain does not enforce vdxfkey namespace ownership at write time. `updateidentity` accepts any i-address as a `contentmultimap` outer key regardless of whether the caller controls the namespace from which that i-address was derived. Anyone with authority over an identity can write under any vdxfkey into *that* identity's `contentmultimap`.
+
+Consumers that need to authenticate a vdxfkey entry's authorship have two options:
+
+1. **Trust by holding identity** — appropriate when the data is the identity owner's own content. Example: a player publishes their own profile on their own VerusID; readers trust the player implicitly because the player wrote it.
+2. **Verify a co-located namespace signature** — the namespace authority pre-signs the content with [`signdata`](../reference/data/signdata.md), binding the signature to the vdxfkey via VDXF binding. The signed proof is stored alongside the content, and consumers call [`verifysignature`](../reference/data/verifysignature.md) before accepting the entry. Entries without a valid namespace signature are ignored at the application layer. Useful when an entry under a known vdxfkey must demonstrably originate from (or be endorsed by) the namespace owner — leaderboards, attestations, schema-bound application data. See [How to Authenticate Identity Content](../how-to/identity/authenticate-identity-content.md).
 
 ---
 
@@ -164,4 +184,5 @@ Decryption access control:
 - [`updateidentity`](../reference/identity/updateidentity.md) — write content
 - [`getidentitycontent`](../reference/identity/getidentitycontent.md) — read content with filtering
 - [How to Store and Read Identity Content](../how-to/identity/store-and-read-content.md) — step-by-step guide for public content
+- [How to Authenticate Identity Content](../how-to/identity/authenticate-identity-content.md) — verify a cmm entry was signed by a specific namespace authority
 - [How to Encrypt Data on a Public Identity](../how-to/data/encrypt-data-on-public-identity.md) — step-by-step guide for encrypted content

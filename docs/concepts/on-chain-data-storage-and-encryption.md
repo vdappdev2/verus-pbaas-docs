@@ -74,8 +74,17 @@ Three encryption tiers are available for content stored in `contentmultimap`. Ea
 | Tier | How to write | On-chain | Who decrypts |
 |---|---|---|---|
 | **Public-encrypted (envelope)** — recommended default for app data | `{data: {<input>}}` in `contentmultimap` (no `encrypttoaddress`) | `flags: 13` with on-chain `ivk` | Anyone — IVK is published; uniform `decryptdata` entry path |
-| **Plaintext** — opt-out for generic-reader composability | Write the value directly under your VDXF key | `flags: 0` / `96` (no encryption) | Anyone, no decryption needed |
+| **Plaintext** — opt-out for generic-reader composability | Write the value directly under your VDXF key | `flags: 0` / `96` (no encryption) | Anyone, no decryption needed. Display shape varies by mimetype — see below. |
 | **Private-encrypted (envelope or manual)** — single recipient | Envelope: `{data: {<input>, "encrypttoaddress": "zs1..."}}`. Manual: `signdata --encrypttoaddress` then store the resulting flags:5 descriptor. | `flags: 5` with `epk` only (envelope), or `flags: 37` after manual storage flag mutation | Recipient z-address holder, or anyone with the EVK / IVK / SSK |
+
+#### Plaintext: text vs. hex display by mimetype
+
+Plaintext (`flags: 96`) DataDescriptors come in two render shapes depending on `mimetype`:
+
+- **`mimetype: text/plain`** — `objectdata` displays as `{"message": "..."}`. Readable directly in `getidentity` and any JSON view.
+- **Other mimetypes** (`application/json`, `application/octet-stream`, etc.) — `objectdata` displays as a raw hex string. Machine-decodable with `bytes.fromhex(...)`, but not eye-readable in default tooling.
+
+Same on-chain bytes; same lack of encryption. The choice is purely about the default rendering surface — useful when content should be unencrypted (no key management, no txid bookkeeping) but should not render as free-form text in block explorers or casual `getidentity` reads. See [VDXF and Identity Content — Display shape depends on mimetype](vdxf-and-identity-content.md#display-shape-depends-on-mimetype).
 
 #### Public-encrypted via the `{data:{}}` envelope
 
@@ -331,6 +340,7 @@ Use cases:
 - [How to Publish Encrypted Data on an Identity](../how-to/data/publish-encrypted-data-on-identity.md) — the daemon-managed `{data:{}}` envelope path
 - [How to Encrypt Data on a Public Identity](../how-to/data/encrypt-data-on-public-identity.md) — manual signdata-based path with SSK selective disclosure
 - [How to Sign and Verify Data](../how-to/data/sign-and-verify-data.md) — signing workflow without storage
+- [How to Authenticate Identity Content](../how-to/identity/authenticate-identity-content.md) — namespace-signed cmm entries with replay-resistant binding
 - [How to Grant Read Access to Encrypted Data](../how-to/data/grant-read-access.md) — sharing EVKs and SSKs
 - [Merkle Mountain Ranges on Verus](merkle-mountain-ranges.md) — MMR construction and proofs via `signdata`
 - [`sendcurrency`](../reference/multichain/sendcurrency.md) — the `data` parameter for z-address storage
