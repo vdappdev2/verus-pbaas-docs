@@ -97,7 +97,17 @@ The VDXF type key (`vrsc::data.type.string` in this case) tells applications how
 
 The DataDescriptor key (`i4GC1YGEVD21...`) wraps richer metadata: version, mimetype, label, and optional encryption fields (`salt`, `epk`, `ssk`). The daemon auto-sets `flags: 96` when mimetype and label are present.
 
-**Best practice for labels:** Use the i-address of the VDXF key (e.g., `"label": "iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c"`) rather than the string name. The i-address is deterministic and avoids resolution at read time.
+**Three keys, three roles.** The DataDescriptor entry surfaces three i-addresses that play distinct roles:
+
+| Position | Key | Role |
+|---|---|---|
+| Outer multimap key | application-chosen VDXF i-address | Bucket / topic the array belongs to |
+| Inner key | `i4GC1YGEVD21afWudGoFJVdnfjJ5XWnCQv` | Structural tag meaning "this object is a DataDescriptor" |
+| `label` field | narrower VDXF i-address | Per-entry discriminator within the bucket |
+
+The array under one outer key is a *keyed record* — `label` is what distinguishes entries that share the bucket. Under an outer `profile` key, entries are labelled `profile.name`, `profile.bio`, `profile.address.home`, etc. Readers filter by label instead of walking by index.
+
+**Best practice for labels:** Use i-addresses (resolved once via `getvdxfid`) rather than string names — they are deterministic and avoid resolution at read time. A single-entry bucket can use the outer key as its label, but that pattern collapses the discriminator as soon as a second entry is added; prefer distinct narrower labels from the start.
 
 ### Display shape depends on mimetype
 

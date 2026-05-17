@@ -56,13 +56,37 @@ updateidentity '{"name":"alice","parent":"iJhCez...","contentmultimap":{"iK7a5JN
 
 ### DataDescriptor with metadata
 
-Store richer content with mimetype and label:
+Store richer content with mimetype and label. When multiple entries share one outer key, each entry's `label` is what distinguishes them — set it to the i-address of a *narrower* VDXF key naming the specific field.
+
+Resolve the outer bucket and the per-field labels first:
 
 ```
-updateidentity '{"name":"alice","parent":"iJhCez...","contentmultimap":{"iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c":[{"i4GC1YGEVD21afWudGoFJVdnfjJ5XWnCQv":{"version":1,"objectdata":{"message":"Hello from alice"},"mimetype":"text/plain","label":"iK7a5JNJnbeuYWVHCDRpJosj3irGJ5Qa8c"}}]}}'
+getvdxfid "myapp.vrsc::profile"            # → <outerVdxfid>
+getvdxfid "myapp.vrsc::profile.name"       # → <labelNameVdxfid>
+getvdxfid "myapp.vrsc::profile.bio"        # → <labelBioVdxfid>
 ```
 
-The daemon auto-sets `flags: 96` when `mimetype` and `label` are present.
+Then write two entries under the same bucket, each with its own label. For `application/json`, the `objectdata` value is the utf8 hex of the JSON string (see [Choosing the objectdata shape by mimetype](#choosing-the-objectdata-shape-by-mimetype)):
+
+```
+updateidentity '{"name":"alice","parent":"iJhCez...","contentmultimap":{"<outerVdxfid>":[{"i4GC1YGEVD21afWudGoFJVdnfjJ5XWnCQv":{"version":1,"objectdata":"7b226e616d65223a22416c696365227d","mimetype":"application/json","label":"<labelNameVdxfid>"}},{"i4GC1YGEVD21afWudGoFJVdnfjJ5XWnCQv":{"version":1,"objectdata":"7b2262696f223a22417669642068696b6572227d","mimetype":"application/json","label":"<labelBioVdxfid>"}}]}}'
+```
+
+The two `objectdata` hex strings decode to `{"name":"Alice"}` and `{"bio":"Avid hiker"}`. The daemon auto-sets `flags: 96` when `mimetype` and `label` are present.
+
+### The role of `label`
+
+The array under one outer multimap key is a *keyed record*, not a positional list. A DataDescriptor's `label` is the per-entry discriminator — typically the i-address of a narrower VDXF key naming the specific field within the bucket (e.g. under an outer `profile` bucket, entries are labelled `profile.name`, `profile.bio`, `profile.address.home`, `profile.address.work`, etc.). A reader filters the array by label instead of walking by index.
+
+Three keys play distinct roles in a DataDescriptor entry:
+
+| Position | Key | Role |
+|---|---|---|
+| Outer multimap key | application-chosen VDXF i-address | Bucket / topic |
+| Inner key (always) | `i4GC1YGEVD21afWudGoFJVdnfjJ5XWnCQv` | Structural tag meaning "this object is a DataDescriptor" |
+| `label` field | narrower VDXF i-address | Per-entry discriminator within the bucket |
+
+A single-entry bucket can set `label` equal to the outer key, but that pattern collapses the discriminator as soon as a second entry is added. Prefer distinct narrower labels from the start.
 
 ### Choosing the objectdata shape by mimetype
 
